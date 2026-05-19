@@ -1,0 +1,63 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+
+/** Team abbreviation → numeric team id (used by the NBA logo CDN). */
+const TEAM_ID_BY_ABBR: Record<string, number> = {
+  ATL: 1610612737, BOS: 1610612738, CLE: 1610612739, NOP: 1610612740,
+  CHI: 1610612741, DAL: 1610612742, DEN: 1610612743, GSW: 1610612744,
+  HOU: 1610612745, LAC: 1610612746, LAL: 1610612747, MIA: 1610612748,
+  MIL: 1610612749, MIN: 1610612750, BKN: 1610612751, NYK: 1610612752,
+  ORL: 1610612753, IND: 1610612754, PHI: 1610612755, PHX: 1610612756,
+  POR: 1610612757, SAC: 1610612758, SAS: 1610612759, OKC: 1610612760,
+  TOR: 1610612761, UTA: 1610612762, MEM: 1610612763, WAS: 1610612764,
+  DET: 1610612765, CHA: 1610612766,
+  // Legacy
+  NJN: 1610612751, // → BKN
+  NOH: 1610612740, // → NOP
+  SEA: 1610612760, // → OKC
+};
+
+interface TeamLogoProps {
+  team: string | null | undefined;
+  size?: number;
+  className?: string;
+}
+
+export function TeamLogo({ team, size = 28, className = "" }: TeamLogoProps) {
+  const [errored, setErrored] = useState(false);
+  if (!team) return null;
+
+  const id = TEAM_ID_BY_ABBR[team.toUpperCase()];
+  if (!id || errored) {
+    return (
+      <span
+        className={`bg-muted text-muted-foreground inline-flex items-center justify-center rounded-md font-mono text-[10px] font-semibold ${className}`}
+        style={{ width: size, height: size }}
+        title={team}
+      >
+        {team}
+      </span>
+    );
+  }
+
+  const src = `https://cdn.nba.com/logos/nba/${id}/primary/L/logo.svg`;
+  return (
+    <span
+      className={`inline-flex items-center justify-center ${className}`}
+      style={{ width: size, height: size }}
+      title={team}
+    >
+      <Image
+        src={src}
+        alt={team}
+        width={size}
+        height={size}
+        className="size-full object-contain"
+        onError={() => setErrored(true)}
+        unoptimized
+      />
+    </span>
+  );
+}

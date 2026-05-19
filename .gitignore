@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+*.env.local
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+.npm/
+.pnpm-store/
+*.tsbuildinfo
+.env.local
+.env*.local
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Playwright
+playwright-report/
+test-results/
+.playwright/
+
+# Misc
+*.log
+.coverage
+.pytest_cache/
+.ruff_cache/

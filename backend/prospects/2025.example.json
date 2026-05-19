@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Cooper Flagg",
+    "sr_slug": "cooper-flagg-1",
+    "position": "F",
+    "draft_class": 2025,
+    "college": "Duke"
+  },
+  {
+    "name": "Dylan Harper",
+    "sr_slug": "dylan-harper-1",
+    "position": "G",
+    "draft_class": 2025,
+    "college": "Rutgers"
+  },
+  {
+    "name": "Ace Bailey",
+    "sr_slug": "ace-bailey-1",
+    "position": "F",
+    "draft_class": 2025,
+    "college": "Rutgers"
+  }
+]
