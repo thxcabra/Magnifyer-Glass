@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TeamLogo } from "@/components/team-logo";
 import { StatLegend } from "@/components/stat-legend";
 import { useLocale } from "@/components/locale-provider";
-import type { SeasonStats, SeasonType } from "@/lib/api";
+import type { SeasonStats } from "@/lib/api";
 
 type Mode = "per_game" | "per_100" | "advanced" | "shooting";
 type Slate = "regular_season" | "playoffs" | "career";
@@ -65,19 +65,6 @@ const COLUMNS: Record<Mode, Column[]> = {
   per_100: PER_100,
   advanced: ADVANCED,
   shooting: SHOOTING,
-};
-
-const MODE_LABEL: Record<Mode, string> = {
-  per_game: "Per Game",
-  per_100: "Per 100",
-  advanced: "Advanced",
-  shooting: "Shooting",
-};
-
-const SLATE_LABEL: Record<Slate, string> = {
-  regular_season: "Regular Season",
-  playoffs: "Playoffs",
-  career: "Career",
 };
 
 function aggregateCareer(rows: SeasonStats[]): SeasonStats[] {

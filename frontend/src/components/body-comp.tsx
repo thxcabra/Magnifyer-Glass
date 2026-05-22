@@ -98,9 +98,11 @@ export function BodyComp({ frames }: BodyCompProps) {
               </dd>
             </dl>
 
-            {/* Silhouette indicators - only render when we have at least
-                height to anchor against. */}
-            {f.height_in !== null && (
+            {/* Reach chart - only worth showing when we have Combine data
+                (wingspan or standing reach). With bio height alone the box
+                renders nearly empty, so we skip it and keep just the table. */}
+            {f.height_in !== null &&
+              (f.standing_reach_in !== null || f.wingspan_in !== null) && (
               <div className="bg-muted/40 relative h-40 overflow-hidden rounded-lg border">
                 {f.standing_reach_in !== null && (
                   <div

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import argparse
 import time
-from datetime import date, datetime
+from datetime import datetime
 from typing import Any
 
 from nba_api.stats.endpoints import CommonPlayerInfo

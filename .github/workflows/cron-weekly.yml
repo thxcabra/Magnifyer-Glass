@@ -1,0 +1,44 @@
+name: Weekly recompute
+
+# Rebuilds the similarity_cache (powers /compare) and recomputes per-season
+# statistical-title leaders. Both jobs read from Supabase only — no external
+# NBA calls — so they run reliably on hosted runners.
+#
+# Requires repo secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY.
+
+on:
+  schedule:
+    - cron: "0 3 * * 0" # Sundays 03:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: cron-weekly
+  cancel-in-progress: false
+
+jobs:
+  recompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Recompute similarity cache
+        run: python -m app.jobs.precompute_similarity
+
+      - name: Recompute statistical-title leaders
+        run: python -m app.jobs.compute_stat_titles --upsert

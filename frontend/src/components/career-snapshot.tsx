@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TeamLogo } from "@/components/team-logo";
+import { StatLegend } from "@/components/stat-legend";
 import { getServerT } from "@/lib/locale-server";
 import type { SeasonStats } from "@/lib/api";
 
@@ -116,11 +117,11 @@ export async function CareerSnapshot({ stats }: CareerSnapshotProps) {
             {t("player.career_highs")}
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <CareerHigh label={t("axis.points")} best={bestPts} fmt={(v) => fmt(v)} />
-            <CareerHigh label={t("axis.assists")} best={bestAst} fmt={(v) => fmt(v)} />
-            <CareerHigh label={t("axis.rebounds")} best={bestReb} fmt={(v) => fmt(v)} />
-            <CareerHigh label={t("axis.true_shooting")} best={bestTs} fmt={fmtPct} />
-            <CareerHigh label={t("axis.usage")} best={bestUsg} fmt={fmtPct} />
+            <CareerHigh metric="pts_per_game" label={t("axis.points")} best={bestPts} fmt={(v) => fmt(v)} />
+            <CareerHigh metric="ast_per_game" label={t("axis.assists")} best={bestAst} fmt={(v) => fmt(v)} />
+            <CareerHigh metric="reb_per_game" label={t("axis.rebounds")} best={bestReb} fmt={(v) => fmt(v)} />
+            <CareerHigh metric="ts_pct" label={t("axis.true_shooting")} best={bestTs} fmt={fmtPct} />
+            <CareerHigh metric="usg_pct" label={t("axis.usage")} best={bestUsg} fmt={fmtPct} />
           </div>
         </div>
       </CardContent>
@@ -140,10 +141,12 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function CareerHigh({
+  metric,
   label,
   best,
   fmt,
 }: {
+  metric: string;
   label: string;
   best: { value: number; season: string; team: string | null } | null;
   fmt: (v: number) => string;
@@ -151,7 +154,9 @@ function CareerHigh({
   if (!best) return null;
   return (
     <div className="flex items-baseline justify-between gap-3 border-b pb-1.5 last:border-0">
-      <span className="text-sm">{label}</span>
+      <span className="text-sm">
+        <StatLegend metric={metric} label={label} />
+      </span>
       <span className="flex items-baseline gap-2">
         <span className="text-muted-foreground font-mono text-[11px]">
           {best.season}

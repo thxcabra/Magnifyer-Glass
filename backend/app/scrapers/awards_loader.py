@@ -59,17 +59,24 @@ def _classify_award(row: dict[str, Any]) -> str:
     team_no = row.get("ALL_NBA_TEAM_NUMBER") or row.get("TEAM")  # endpoint varies
 
     if "All-NBA" in desc:
-        if str(team_no) in ("1", "First"): return "all_nba_first"
-        if str(team_no) in ("2", "Second"): return "all_nba_second"
-        if str(team_no) in ("3", "Third"): return "all_nba_third"
+        if str(team_no) in ("1", "First"):
+            return "all_nba_first"
+        if str(team_no) in ("2", "Second"):
+            return "all_nba_second"
+        if str(team_no) in ("3", "Third"):
+            return "all_nba_third"
         return "all_nba_first"  # legacy seasons without a number → assume first team
     if "All-Defensive" in desc:
-        if str(team_no) in ("1", "First"): return "all_defensive_first"
-        if str(team_no) in ("2", "Second"): return "all_defensive_second"
+        if str(team_no) in ("1", "First"):
+            return "all_defensive_first"
+        if str(team_no) in ("2", "Second"):
+            return "all_defensive_second"
         return "all_defensive_first"
     if "All-Rookie" in desc:
-        if str(team_no) in ("1", "First"): return "all_rookie_first"
-        if str(team_no) in ("2", "Second"): return "all_rookie_second"
+        if str(team_no) in ("1", "First"):
+            return "all_rookie_first"
+        if str(team_no) in ("2", "Second"):
+            return "all_rookie_second"
         return "all_rookie_first"
 
     for needle, label in DESCRIPTION_MAP:

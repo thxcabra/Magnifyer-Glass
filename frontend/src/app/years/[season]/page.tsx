@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,19 @@ import { getServerT } from "@/lib/locale-server";
 import { teamFullName } from "@/lib/team-names";
 
 export const revalidate = 300;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ season: string }>;
+}): Promise<Metadata> {
+  const { season } = await params;
+  return {
+    title: `${season} NBA season`,
+    description: `${season} NBA season — champion, MVP, Finals MVP, DPOY, All-NBA and All-Defensive squads, final standings, the playoff bracket, and the full draft class.`,
+    alternates: { canonical: `/years/${season}` },
+  };
+}
 
 type YearSummary = Awaited<ReturnType<typeof api.getYearSummary>>;
 type YPlayer = YearSummary["all_nba_first"][number];
@@ -37,14 +51,6 @@ const SQUAD_ORDER = [
   "all_rookie_first",
   "all_rookie_second",
 ];
-
-const STAT_ICONS: Record<string, string> = {
-  scoring_title: "🎯",
-  assists_title: "🎁",
-  rebounding_title: "🪣",
-  steals_title: "🥊",
-  blocks_title: "🛡️",
-};
 
 export default async function YearPage({
   params,
@@ -171,7 +177,7 @@ export default async function YearPage({
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {headlines.map((h) => (
-              <HonoreeCard key={h.award} h={h} season={seasonStr} label={t(`award.${h.award}`)} />
+              <HonoreeCard key={h.award} h={h} label={t(`award.${h.award}`)} />
             ))}
           </div>
         </section>
@@ -238,7 +244,7 @@ export default async function YearPage({
                   <CardTitle className="text-sm font-medium">{t(SQUAD_I18N[k])}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <PlayerRows players={team_squads[k]} season={seasonStr} />
+                  <PlayerRows players={team_squads[k]} />
                 </CardContent>
               </Card>
             ))}
@@ -326,11 +332,9 @@ export default async function YearPage({
 
 function HonoreeCard({
   h,
-  season,
   label,
 }: {
   h: YearSummary["headlines"][number];
-  season: string;
   /** Pre-translated award label. */
   label: string;
 }) {
@@ -496,13 +500,7 @@ function PlayoffBracket({
   );
 }
 
-function PlayerRows({
-  players,
-  season,
-}: {
-  players: YPlayer[];
-  season: string;
-}) {
+function PlayerRows({ players }: { players: YPlayer[] }) {
   return (
     <ul className="divide-y">
       {players.map((p) => (

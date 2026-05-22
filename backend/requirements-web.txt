@@ -1,0 +1,13 @@
+# Slim dependency set for the always-on WEB API only.
+# The API routes never import pandas/scikit-learn/playwright/nba_api — those are
+# only used by the offline scrapers/jobs (run locally / on a self-hosted
+# runner). Keeping the web image lean means a small, cheap, fast-booting
+# container that fits comfortably in a free tier.
+fastapi==0.115.4
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+supabase==2.9.1
+httpx==0.27.2
+slowapi==0.1.9

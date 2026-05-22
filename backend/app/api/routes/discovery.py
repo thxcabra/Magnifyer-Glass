@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 
+from app.core.rate_limit import limiter
 from app.core.supabase_client import get_supabase
 from app.models.schemas import Archetype
 
@@ -7,13 +8,15 @@ router = APIRouter(prefix="/discovery", tags=["discovery"])
 
 
 @router.get("/prospects")
+@limiter.limit("60/minute")
 def list_prospects(
+    request: Request,
     draft_class: int | None = Query(default=None),
     position: str | None = Query(default=None),
     archetype: Archetype | None = Query(default=None),
     include_nba: bool = Query(default=False),
     has_archetype: bool | None = Query(default=None),
-    limit: int = Query(default=120, ge=1, le=500),
+    limit: int = Query(default=120, ge=1, le=2000),
     offset: int = Query(default=0, ge=0),
 ):
     """List prospects (or all players when include_nba=True or archetype is set).

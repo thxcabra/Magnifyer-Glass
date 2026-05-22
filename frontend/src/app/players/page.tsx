@@ -1,9 +1,23 @@
+import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import { PlayersExplorer } from "@/components/players-explorer";
 
 export const revalidate = 120;
 
-export default async function PlayersIndexPage() {
+export const metadata: Metadata = {
+  title: "Players",
+  description:
+    "Browse every NBA player in our catalog — filter by archetype, position, team, draft class, or college. Profiles include per-100 stats, advanced rates, percentile bars, and tactical-archetype classification.",
+  alternates: { canonical: "/players" },
+};
+
+export default async function PlayersIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ archetype?: string }>;
+}) {
+  const { archetype } = await searchParams;
+
   // Two fetches: classified players first (ordered by archetype confidence)
   // then the unclassified bench/role pool. Merging gives the user a single
   // browsable list of 500+ NBA players in one shot.
@@ -20,5 +34,10 @@ export default async function PlayersIndexPage() {
     } as Parameters<typeof api.listProspects>[0]),
   ]);
 
-  return <PlayersExplorer players={[...classified, ...unclassified]} />;
+  return (
+    <PlayersExplorer
+      players={[...classified, ...unclassified]}
+      initialArchetype={archetype ?? null}
+    />
+  );
 }

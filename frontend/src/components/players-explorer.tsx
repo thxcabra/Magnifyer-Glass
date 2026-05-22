@@ -14,14 +14,22 @@ import type { Player } from "@/lib/api";
 
 type Filter = "all" | "classified" | "unclassified";
 
-export function PlayersExplorer({ players }: { players: Player[] }) {
+export function PlayersExplorer({
+  players,
+  initialArchetype = null,
+}: {
+  players: Player[];
+  initialArchetype?: string | null;
+}) {
   const { t } = useLocale();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("classified");
+  const [archetype, setArchetype] = useState<string | null>(initialArchetype);
 
   const filtered = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
     return players.filter((p) => {
+      if (archetype && p.archetype !== archetype) return false;
       if (filter === "classified" && !p.archetype) return false;
       if (filter === "unclassified" && p.archetype) return false;
       if (!trimmed) return true;
@@ -37,7 +45,7 @@ export function PlayersExplorer({ players }: { players: Player[] }) {
         .toLowerCase()
         .includes(trimmed);
     });
-  }, [players, query, filter]);
+  }, [players, query, filter, archetype]);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
@@ -69,6 +77,17 @@ export function PlayersExplorer({ players }: { players: Player[] }) {
           {t("players.count_shown", { shown: filtered.length, total: players.length })}
         </span>
       </div>
+
+      {archetype && ARCHETYPE_META[archetype as keyof typeof ARCHETYPE_META] && (
+        <button
+          type="button"
+          onClick={() => setArchetype(null)}
+          className="bg-primary/15 text-primary hover:bg-primary/25 mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+        >
+          {ARCHETYPE_META[archetype as keyof typeof ARCHETYPE_META].label}
+          <span aria-hidden>✕</span>
+        </button>
+      )}
 
       {filtered.length === 0 ? (
         <p className="text-muted-foreground mt-10 text-sm">{t("common.no_matches")}</p>

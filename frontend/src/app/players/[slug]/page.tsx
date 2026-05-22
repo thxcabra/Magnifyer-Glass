@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -11,11 +13,54 @@ import { AwardsCard } from "@/components/awards-card";
 import { ArchetypeFits } from "@/components/archetype-fits";
 import { PlayerStatsBlock } from "@/components/player-stats-block";
 import { CareerSnapshot } from "@/components/career-snapshot";
+import { NewsList } from "@/components/news-list";
+import { GameLogTable } from "@/components/game-log-table";
 import type { Archetype } from "@/lib/api";
 import { api, type SeasonStats } from "@/lib/api";
 import { getServerT } from "@/lib/locale-server";
+import { ARCHETYPE_META } from "@/lib/stat-meta";
+import { teamColors } from "@/lib/team-colors";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const { player } = await api.getPlayerProfile(slug, {
+      next: { revalidate: 60 },
+    });
+    const archetypeLabel = player.archetype
+      ? ARCHETYPE_META[player.archetype]?.label
+      : null;
+    const role = archetypeLabel ? ` — ${archetypeLabel}` : "";
+    const ctx = [
+      player.position,
+      player.current_team,
+      player.draft_class ? `${player.draft_class} draft` : null,
+      player.college,
+      player.country,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    return {
+      title: `${player.name}${role}`,
+      description: `${player.name}${role}. ${ctx}. Stats, archetype classification, body composition, awards, and NBA comparisons on Magnifyer Glass.`,
+      alternates: { canonical: `/players/${slug}` },
+      openGraph: {
+        type: "profile",
+        title: `${player.name}${role}`,
+        description: ctx,
+        url: `/players/${slug}`,
+      },
+    };
+  } catch {
+    return { title: slug };
+  }
+}
 
 /** Most-played team - used to label retired players by the franchise they're
  * known for. Sums regular-season games_played by team across the whole career
@@ -61,7 +106,7 @@ export default async function PlayerPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { t } = await getServerT();
+  const { t, locale } = await getServerT();
 
   let profile;
   try {
@@ -82,6 +127,21 @@ export default async function PlayerPage({
     ? latest?.team ?? player.current_team ?? null
     : primary?.team ?? player.current_team ?? null;
   const displayTeamLabel = isActive ? null : primary ? t("player.most_played_for") : null;
+  const teamColor = teamColors(displayTeam);
+
+  // Free, attributed action photo from Wikimedia Commons (cached on the
+  // backend). Falls back to the team-colored banner when there's none.
+  // Photo + news both depend only on the player, so fetch them in parallel.
+  const [photo, news] = await Promise.all([
+    api
+      .getPlayerPhoto(player.name, { next: { revalidate: 86400 } })
+      .catch(() => null),
+    api
+      .getNews(`${player.name} NBA`, 6, locale, { next: { revalidate: 900 } })
+      .then((r) => r.items)
+      .catch(() => []),
+  ]);
+  const heroPhoto = photo?.url ?? null;
 
   // Promote the highest-scoring partial fit when it's a clearer match than the
   // classifier's strict pick. `_fits` scores and `archetype_confidence` aren't
@@ -97,16 +157,45 @@ export default async function PlayerPage({
     : player.archetype_confidence ?? null;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      {/* Header */}
-      <div className="flex flex-wrap items-start gap-6">
-        <PlayerHeadshot
-          externalId={player.external_id}
-          url={player.headshot_url}
-          name={player.name}
-          size={128}
+    <div>
+      {/* Immersive team-tinted header banner */}
+      <section className="relative isolate flex min-h-[300px] flex-col justify-end overflow-hidden border-b">
+        {heroPhoto && (
+          <Image
+            src={heroPhoto}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[center_15%]"
+          />
+        )}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: `radial-gradient(130% 130% at 0% 0%, ${teamColor.primary} 0%, transparent 55%)`,
+          }}
         />
-        <div className="flex-1 min-w-0">
+        {/* Solid theme background on the left fading to reveal the photo on the
+            right, plus a fade to the page background at the bottom. Keeps the
+            text theme-colored and readable in both light and dark. */}
+        <div
+          aria-hidden
+          className="from-background via-background/70 to-background/20 absolute inset-0 bg-gradient-to-r"
+        />
+        <div
+          aria-hidden
+          className="to-background absolute inset-0 bg-gradient-to-t from-transparent via-transparent"
+        />
+        <div className="relative mx-auto flex max-w-6xl flex-wrap items-start gap-6 px-6 pt-10 pb-8">
+          <PlayerHeadshot
+            externalId={player.external_id}
+            url={player.headshot_url}
+            name={player.name}
+            size={150}
+          />
+          <div className="flex-1 min-w-0">
           <p className="text-muted-foreground text-xs tracking-wide uppercase">
             {player.is_nba ? t("player.is_nba") : t("player.is_prospect")}
             {player.draft_class && (
@@ -125,7 +214,7 @@ export default async function PlayerPage({
               </>
             )}
           </p>
-          <h1 className="mt-1 flex items-center gap-3 text-4xl font-semibold tracking-tight">
+          <h1 className="mt-1 flex flex-wrap items-center gap-3 text-4xl font-bold tracking-tight md:text-5xl">
             {player.name}
             {player.jersey_number && (
               <span className="text-muted-foreground font-mono text-2xl">#{player.jersey_number}</span>
@@ -194,19 +283,21 @@ export default async function PlayerPage({
             )}
           </div>
         )}
-      </div>
-
-      {!player.is_nba && (
-        <div className="mt-6">
-          <Link
-            href={`/compare/${player.slug}`}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center rounded-md px-4 text-sm font-medium"
-          >
-            {t("player.view_comparisons")}
-          </Link>
         </div>
-      )}
+        {photo?.url && (
+          <a
+            href={photo.source_url ?? photo.wiki_url ?? "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground/70 hover:text-foreground absolute right-2 bottom-1 z-10 text-[10px]"
+          >
+            {photo.author ? `Foto: ${photo.author}` : "Foto"}
+            {photo.license ? ` · ${photo.license}` : ""} · Wikimedia
+          </a>
+        )}
+      </section>
 
+      <div className="mx-auto max-w-6xl px-6 py-10">
       <PlayerStatsBlock player={player} stats={stats} isActive={isActive} />
 
       {/* `items-start` stops the columns from stretching to match the tallest
@@ -254,6 +345,27 @@ export default async function PlayerPage({
 
       <div className="mt-6">
         <SeasonLog stats={stats} />
+      </div>
+
+      {player.external_id && displayTeam && (
+        <div className="mt-10">
+          <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
+            {t("player.recent_games")}
+          </h2>
+          <GameLogTable externalId={player.external_id} team={displayTeam} />
+        </div>
+      )}
+
+      {news.length > 0 && (
+        <div className="mt-10">
+          <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
+            {t("news.title")}
+          </h2>
+          <div className="rounded-lg border bg-card p-4">
+            <NewsList items={news} locale={locale} />
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

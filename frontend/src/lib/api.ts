@@ -1,4 +1,24 @@
+import { z } from "zod";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
+
+/**
+ * Encode a single URL path segment exactly once. Next 16 hands dynamic route
+ * params already URL-encoded (e.g. "nikola-joki%C4%87"), so a naive
+ * encodeURIComponent would double-encode and 404 any slug with accents
+ * (Dončić, Jokić, Šarić…). Decoding first makes this idempotent: it works
+ * whether the caller passes a decoded slug from API data or an encoded one
+ * from a route param.
+ */
+function seg(value: string): string {
+  let decoded = value;
+  try {
+    decoded = decodeURIComponent(value);
+  } catch {
+    /* malformed % sequence — fall back to the raw value */
+  }
+  return encodeURIComponent(decoded);
+}
 
 export type PlayerSource = "nba" | "ncaa" | "international" | "g_league";
 
@@ -151,31 +171,6 @@ export interface FullProfile {
   awards: PlayerAward[];
 }
 
-export interface SimilarityMatch {
-  player: Pick<
-    Player,
-    | "id"
-    | "external_id"
-    | "name"
-    | "slug"
-    | "position"
-    | "current_team"
-    | "is_nba"
-    | "draft_class"
-    | "jersey_number"
-    | "archetype"
-  >;
-  similarity: number;
-  stats_component: number | null;
-  phys_component: number | null;
-}
-
-export interface ComparisonResponse {
-  prospect: Player;
-  matches: SimilarityMatch[];
-  weights: { stats: number; phys: number };
-}
-
 export interface Team {
   id: number;
   abbreviation: string;
@@ -222,6 +217,174 @@ export interface TeamResponse {
   roster: RosterEntry[];
 }
 
+// ---- Live data (cdn.nba.com via backend proxy) ----------------------------
+
+export interface LiveTeamBrief {
+  tricode: string | null;
+  name: string | null;
+  city: string | null;
+  wins: number | null;
+  losses: number | null;
+  score: number | null;
+}
+
+export interface LiveLeader {
+  name: string | null;
+  tricode: string | null;
+  points: number | null;
+  rebounds: number | null;
+  assists: number | null;
+}
+
+export interface LiveGame {
+  game_id: string;
+  status: number; // 1=scheduled, 2=live, 3=final
+  status_text: string | null;
+  period: number | null;
+  game_clock: string | null;
+  game_time_utc: string | null;
+  home: LiveTeamBrief;
+  away: LiveTeamBrief;
+  leaders: { home: LiveLeader | null; away: LiveLeader | null };
+}
+
+export interface LiveScoreboard {
+  game_date: string | null;
+  games: LiveGame[];
+}
+
+export interface BoxScorePlayer {
+  person_id: number | null;
+  name: string | null;
+  jersey: string | null;
+  position: string | null;
+  starter: boolean;
+  oncourt: boolean;
+  played: boolean;
+  minutes: string | null;
+  points: number | null;
+  rebounds: number | null;
+  assists: number | null;
+  steals: number | null;
+  blocks: number | null;
+  fgm: number | null;
+  fga: number | null;
+  tpm: number | null;
+  tpa: number | null;
+  ftm: number | null;
+  fta: number | null;
+  plus_minus: number | null;
+}
+
+export interface BoxScoreTeam {
+  tricode: string | null;
+  name: string | null;
+  city: string | null;
+  score: number | null;
+  players: BoxScorePlayer[];
+}
+
+export interface BoxScore {
+  game_id: string;
+  status: number | null;
+  status_text: string | null;
+  period: number | null;
+  game_clock: string | null;
+  arena: string | null;
+  home: BoxScoreTeam | null;
+  away: BoxScoreTeam | null;
+}
+
+export interface PlayByPlayAction {
+  action_number: number | null;
+  clock: string | null;
+  period: number | null;
+  team_tricode: string | null;
+  description: string | null;
+  score_home: string | null;
+  score_away: string | null;
+  action_type: string | null;
+}
+
+export interface PlayByPlay {
+  game_id: string;
+  actions: PlayByPlayAction[];
+}
+
+export interface ScheduleDate {
+  game_date: string | null;
+  games: LiveGame[];
+}
+
+export interface ScheduleResponse {
+  game_dates: ScheduleDate[];
+}
+
+export interface PlayerPhoto {
+  url: string | null;
+  thumb_url?: string | null;
+  author?: string | null;
+  license?: string | null;
+  license_url?: string | null;
+  source_url?: string | null;
+  wiki_url?: string | null;
+}
+
+export interface NewsItem {
+  title: string;
+  link: string;
+  source: string | null;
+  published: string | null;
+}
+
+export interface StandingRow {
+  rank: number;
+  tricode: string;
+  name: string | null;
+  city: string | null;
+  wins: number;
+  losses: number;
+  win_pct: number;
+}
+
+export interface StandingsResponse {
+  east: StandingRow[];
+  west: StandingRow[];
+}
+
+export interface PlayoffSeries {
+  round: number;
+  conference: "East" | "West" | "Finals";
+  teams: { tricode: string; wins: number }[];
+  winner: string | null;
+}
+
+export interface PlayoffsResponse {
+  series: PlayoffSeries[];
+}
+
+export interface GameLogRow {
+  game_id: string | null;
+  date: string | null;
+  matchup: string | null;
+  wl: string | null;
+  team_score: number | null;
+  opp_score: number | null;
+  min: string | null;
+  pts: number | null;
+  reb: number | null;
+  ast: number | null;
+  stl: number | null;
+  blk: number | null;
+  fgm: number | null;
+  fga: number | null;
+  tpm: number | null;
+  tpa: number | null;
+  ftm: number | null;
+  fta: number | null;
+  plus_minus: number | null;
+}
+
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
@@ -230,8 +393,59 @@ async function get<T>(path: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}: ${path}`);
   }
-  return res.json() as Promise<T>;
+  // Guard against a 200 response that isn't actually JSON (e.g. an HTML error
+  // page from a misconfigured proxy). Without this, `res.json()` throws an
+  // opaque SyntaxError that surfaces as a blank screen.
+  try {
+    return (await res.json()) as T;
+  } catch {
+    throw new Error(`Invalid JSON in response from ${path}`);
+  }
 }
+
+/**
+ * Runtime-validated fetch. `guard` is a loose Zod schema that asserts only the
+ * fields the UI actually depends on — extra keys are preserved (looseObject),
+ * so this never strips data, it only fails fast on a structurally broken
+ * payload instead of letting `undefined.foo` crash deep in a render.
+ */
+async function getValidated<T>(
+  path: string,
+  guard: z.ZodType,
+  init?: RequestInit,
+): Promise<T> {
+  const data = await get<unknown>(path, init);
+  const parsed = guard.safeParse(data);
+  if (!parsed.success) {
+    const detail = parsed.error.issues
+      .slice(0, 3)
+      .map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`)
+      .join("; ");
+    throw new Error(`Malformed response from ${path}: ${detail}`);
+  }
+  return parsed.data as T;
+}
+
+// Loose runtime guards. We require only the fields whose absence would break
+// rendering (names used as headings, slugs used in links, arrays we map over).
+const zPlayerCore = z.looseObject({
+  name: z.string(),
+  slug: z.string(),
+});
+
+const zFullProfile = z.looseObject({
+  player: zPlayerCore,
+  stats: z.array(z.unknown()),
+  awards: z.array(z.unknown()),
+});
+
+const zTeamResponse = z.looseObject({
+  team: z.looseObject({ abbreviation: z.string(), full_name: z.string() }),
+  seasons: z.array(z.string()),
+  roster: z.array(z.unknown()),
+});
+
+const zPlayerArray = z.array(zPlayerCore);
 
 export const api = {
   searchPlayers: (q: string, limit = 10) =>
@@ -252,13 +466,14 @@ export const api = {
       >[]
     >(`/players/search?q=${encodeURIComponent(q)}&limit=${limit}`),
 
-  getPlayer: (slug: string) => get<Player>(`/players/${encodeURIComponent(slug)}`),
+  getPlayer: (slug: string) => get<Player>(`/players/${seg(slug)}`),
 
   getPlayerProfile: (slug: string, init?: RequestInit) =>
-    get<FullProfile>(`/players/${encodeURIComponent(slug)}/profile`, init),
-
-  getComparison: (slug: string, init?: RequestInit) =>
-    get<ComparisonResponse>(`/compare/${encodeURIComponent(slug)}`, init),
+    getValidated<FullProfile>(
+      `/players/${seg(slug)}/profile`,
+      zFullProfile,
+      init,
+    ),
 
   listTeams: (includeLegacy = false) =>
     get<Team[]>(`/teams${includeLegacy ? "?include_legacy=true" : ""}`),
@@ -290,7 +505,7 @@ export const api = {
           >;
         }>
       >;
-    }>(`/years/${encodeURIComponent(season)}/leaders`, init),
+    }>(`/years/${seg(season)}/leaders`, init),
 
   getYearSummary: (season: string, init?: RequestInit) => {
     type YPlayer = Pick<
@@ -349,7 +564,7 @@ export const api = {
       >;
       standings: { east: StandingsRow[]; west: StandingsRow[] };
       playoff_series: PlayoffSeries[];
-    }>(`/years/${encodeURIComponent(season)}`, init);
+    }>(`/years/${seg(season)}`, init);
   },
 
   listAwardTypes: () =>
@@ -389,11 +604,12 @@ export const api = {
         team_abbr: string | null;
         player: Pick<Player, "id" | "external_id" | "name" | "slug" | "position" | "current_team" | "is_nba" | "headshot_url" | "archetype">;
       }>;
-    }>(`/lists/${encodeURIComponent(award)}`, init),
+    }>(`/lists/${seg(award)}`, init),
 
   getTeam: (abbreviation: string, season?: string, init?: RequestInit) =>
-    get<TeamResponse>(
-      `/teams/${encodeURIComponent(abbreviation)}${season ? `?season=${encodeURIComponent(season)}` : ""}`,
+    getValidated<TeamResponse>(
+      `/teams/${seg(abbreviation)}${season ? `?season=${seg(season)}` : ""}`,
+      zTeamResponse,
       init,
     ),
 
@@ -422,6 +638,32 @@ export const api = {
       undrafted_count: number;
     }>(`/draft/${year}`, init),
 
+  // Live data — server-side capable (used for SSR fallbackData); the browser
+  // polls these directly via lib/swr.ts useLive().
+  getScoreboard: (init?: RequestInit) =>
+    get<LiveScoreboard>("/live/scoreboard", init),
+  getGame: (gameId: string, init?: RequestInit) =>
+    get<BoxScore>(`/live/games/${encodeURIComponent(gameId)}`, init),
+  getPlayByPlay: (gameId: string, init?: RequestInit) =>
+    get<PlayByPlay>(`/live/games/${encodeURIComponent(gameId)}/playbyplay`, init),
+  getSchedule: (init?: RequestInit) =>
+    get<ScheduleResponse>("/live/schedule", init),
+
+  getStandings: (init?: RequestInit) =>
+    get<StandingsResponse>("/live/standings", init),
+
+  getPlayoffs: (init?: RequestInit) =>
+    get<PlayoffsResponse>("/live/playoffs", init),
+
+  getPlayerPhoto: (name: string, init?: RequestInit) =>
+    get<PlayerPhoto>(`/photos/player?name=${encodeURIComponent(name)}`, init),
+
+  getNews: (q: string, limit = 10, lang = "pt-BR", init?: RequestInit) =>
+    get<{ items: NewsItem[] }>(
+      `/news?q=${encodeURIComponent(q)}&limit=${limit}&lang=${encodeURIComponent(lang)}`,
+      init,
+    ),
+
   listProspects: (filters: {
     draft_class?: number;
     position?: string;
@@ -436,7 +678,10 @@ export const api = {
       if (v !== undefined && v !== null && v !== "") qs.set(k, String(v));
     }
     const tail = qs.toString();
-    return get<Player[]>(`/discovery/prospects${tail ? `?${tail}` : ""}`);
+    return getValidated<Player[]>(
+      `/discovery/prospects${tail ? `?${tail}` : ""}`,
+      zPlayerArray,
+    );
   },
 };
 

@@ -76,7 +76,7 @@ def main() -> None:
         swaps.append((r["id"], old_arch, new_arch, float(new_score or 0)))
         by_change[(old_arch, new_arch)] += 1
 
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  no _fits stored      : {skipped_no_fits}")
     print(f"  already matches top  : {untouched_same}")
     print(f"  about to promote     : {len(swaps)}")

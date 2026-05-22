@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +10,34 @@ import { StatLegend } from "@/components/stat-legend";
 import { api } from "@/lib/api";
 import { TEAM_LORE } from "@/lib/team-lore";
 import { CollapsibleList } from "@/components/collapsible-list";
+import { NewsList } from "@/components/news-list";
 import { getServerT } from "@/lib/locale-server";
 import { translate, type Locale } from "@/lib/i18n";
+import { teamFullName } from "@/lib/team-names";
+import { teamColors } from "@/lib/team-colors";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ abbreviation: string }>;
+  searchParams: Promise<{ season?: string }>;
+}): Promise<Metadata> {
+  const { abbreviation } = await params;
+  const { season } = await searchParams;
+  const fullName = teamFullName(abbreviation) || abbreviation;
+  const seasonSuffix = season ? ` — ${season}` : "";
+  const canonical = season
+    ? `/teams/${abbreviation}?season=${encodeURIComponent(season)}`
+    : `/teams/${abbreviation}`;
+  return {
+    title: `${fullName}${seasonSuffix}`,
+    description: `${fullName}${seasonSuffix}. Roster, season-by-season stats, championship history, retired jerseys, and franchise lore on Magnifyer Glass.`,
+    alternates: { canonical },
+  };
+}
 
 export default async function TeamPage({
   params,
@@ -35,17 +60,36 @@ export default async function TeamPage({
 
   const { team, season: activeSeason, seasons, roster, title_seasons, is_champion_this_season } = data;
   const lore = TEAM_LORE[team.abbreviation];
+  const tc = teamColors(team.abbreviation);
+
+  const news = await api
+    .getNews(`${team.full_name} NBA`, 8, locale, { next: { revalidate: 900 } })
+    .then((r) => r.items)
+    .catch(() => []);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div className="flex items-center gap-5">
-          <TeamLogo team={team.abbreviation} size={88} />
-          <div>
-            <p className="text-muted-foreground text-xs tracking-wide uppercase">
-              {team.is_active ? t("team.franchise") : t("team.defunct")}
-            </p>
-            <h1 className="mt-1 text-4xl font-semibold tracking-tight">{team.full_name}</h1>
+    <div>
+      {/* Immersive team-tinted header banner */}
+      <section className="relative isolate overflow-hidden border-b">
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-35"
+          style={{
+            background: `radial-gradient(130% 130% at 0% 0%, ${tc.primary} 0%, transparent 55%)`,
+          }}
+        />
+        <div
+          aria-hidden
+          className="from-background via-background/75 absolute inset-0 bg-gradient-to-t to-transparent"
+        />
+        <div className="relative mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-6 px-6 pt-10 pb-8">
+          <div className="flex items-center gap-5">
+            <TeamLogo team={team.abbreviation} size={104} />
+            <div>
+              <p className="text-muted-foreground text-xs tracking-wide uppercase">
+                {team.is_active ? t("team.franchise") : t("team.defunct")}
+              </p>
+              <h1 className="mt-1 text-4xl font-bold tracking-tight md:text-5xl">{team.full_name}</h1>
             <p className="text-muted-foreground mt-2 text-sm">
               {team.city}
               {team.year_founded ? ` · ${t("team.founded")} ${team.year_founded}` : ""}
@@ -78,8 +122,10 @@ export default async function TeamPage({
             locale={locale}
           />
         )}
-      </div>
+        </div>
+      </section>
 
+      <div className="mx-auto max-w-7xl px-6 py-10">
       {title_seasons.length > 0 && (
         <ChampionshipsRow
           abbreviation={team.abbreviation}
@@ -256,6 +302,18 @@ export default async function TeamPage({
           )}
         </CardContent>
       </Card>
+
+      {news.length > 0 && (
+        <div className="mt-10">
+          <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
+            {t("news.title")}
+          </h2>
+          <div className="rounded-lg border bg-card p-4">
+            <NewsList items={news} locale={locale} />
+          </div>
+        </div>
+      )}
+      </div>
     </div>
   );
 }

@@ -9,7 +9,6 @@ Run:
 from __future__ import annotations
 
 import argparse
-import json
 
 from app.core.config import get_settings
 from app.core.supabase_client import get_supabase

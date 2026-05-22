@@ -1,75 +1,91 @@
 # Deployment
 
-The platform is three pieces. Each can be deployed independently.
+Three pieces, deployed independently. The web API is intentionally lightweight
+(no Chromium / pandas / scikit-learn — those only run in the offline jobs), so
+it ships as a small, cheap, fast-booting container.
 
 ## Frontend → Vercel
-
-The Next.js app deploys as-is to Vercel.
 
 ```bash
 cd frontend
 npx vercel --prod
 ```
 
-**Environment variables (Vercel dashboard → Project → Settings → Env vars):**
+**Environment variables** (Vercel → Project → Settings → Env vars), set for
+Production **and** Preview:
 
 | Name | Value |
 | --- | --- |
-| `NEXT_PUBLIC_API_BASE` | The deployed backend URL (e.g. `https://magnifyer-api.onrender.com`) |
+| `NEXT_PUBLIC_API_BASE` | deployed backend URL, e.g. `https://magnifyer-api.onrender.com` |
+| `NEXT_PUBLIC_SITE_URL` | the public site URL, e.g. `https://magnifyerglass.com` |
 
-Set the build command to `npm run build` (Vercel auto-detects). Output directory is `.next` (auto).
+Both are required — `lib/api.ts` and `lib/site.ts` have no production fallback.
+Build command `npm run build` (auto-detected). `next.config.ts` already
+allowlists the image hosts (`cdn.nba.com`, `images.unsplash.com`,
+`upload.wikimedia.org`).
 
-## Backend → Render / Fly / Railway
+## Backend → Render / Railway / Fly (always-on)
 
-The FastAPI app needs Python 3.12. Render's free Python service is the simplest. Procfile:
+Uses the slim [backend/Dockerfile](backend/Dockerfile) (Python 3.12, installs
+`requirements-web.txt` only). Any Docker host works.
 
-```
-web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-```
+**Zero-surprise-billing options:**
+- **Render Free** — $0, impossible to be charged; sleeps after 15 min idle
+  (~50 s cold start). Pair with an UptimeRobot ping to keep warm.
+- **Render Starter** — $7/mo flat, no usage overage, always-on. Recommended.
+- **Fly / Cloud Run** — generous free tiers; set a hard budget cap.
 
-**Environment variables (provider dashboard):**
+**Environment variables:**
 
 | Name | Value |
 | --- | --- |
-| `SUPABASE_URL` | from Supabase Project Settings → API |
+| `SUPABASE_URL` | Supabase → Settings → API |
 | `SUPABASE_SERVICE_KEY` | service-role key (secret) |
-| `SUPABASE_ANON_KEY` | anon key (optional, used if frontend later talks to Supabase directly) |
-| `API_CORS_ORIGINS` | comma-separated list, e.g. `https://magnifyer.vercel.app` |
+| `API_CORS_ORIGINS` | comma-separated, e.g. `https://magnifyerglass.com,https://<project>.vercel.app` |
+| `PORT` | injected by the host |
 
-Build command: `pip install -r requirements.txt && playwright install chromium`.
+Health check path: `/health` → `{"status":"ok"}`.
 
-## Database → Supabase
+## Database → Supabase (already hosted)
 
-Already hosted. Future migrations: paste the file contents from `db/migrations/` into the SQL editor in order. Current head: `012_search_returns_external_id.sql` (not applied; optional — the API enriches search responses application-side as a fallback).
+Schema migrations apply by pasting `db/migrations/*.sql` into the SQL editor in
+order (PostgREST/service-key can't run DDL). The live features (scores,
+schedule, standings, playoffs, box scores, player photos, news, recent game
+logs) need **no schema** — they proxy public CDNs / RSS at request time with
+short caches.
 
-## Nightly refresh
+## Live data & cloud-safety
 
-The platform stays fresh by re-pulling the current season + reclassifying. Run nightly:
+- **Works from the cloud:** everything served by the web API — it reads
+  `cdn.nba.com` (header-gated, not IP-gated) and Google News RSS. Scores,
+  schedule, standings, playoff bracket, box scores, play-by-play, recent game
+  logs, player photos (Wikimedia) and news all run fine on any host.
+- **Does NOT work from the cloud:** `stats.nba.com` (used by the nightly
+  loaders / scrapers) blocks datacenter IPs. Run those off-platform.
 
-```bash
-python -m app.jobs.daily_refresh
-```
+## Keeping data fresh (the nightly/weekly jobs)
 
-**Local scheduling (Windows Task Scheduler):**
+The catalog tables (players, season stats, awards, standings history) are
+refreshed by jobs that use `nba_api` (stats.nba.com) + Playwright scrapers —
+these must run from a **residential IP**:
 
-```powershell
-$action = New-ScheduledTaskAction -Execute "C:\Users\joaov\OneDrive\Documentos\Coding\magnifyer-glass\backend\.venv\Scripts\python.exe" `
-    -Argument "-m app.jobs.daily_refresh" `
-    -WorkingDirectory "C:\Users\joaov\OneDrive\Documentos\Coding\magnifyer-glass\backend"
-$trigger = New-ScheduledTaskTrigger -Daily -At 4am
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "MagnifyerDailyRefresh"
-```
+- **Self-hosted GitHub runner** on your machine: set `runs-on: self-hosted` in
+  [.github/workflows/cron-daily.yml](.github/workflows/cron-daily.yml).
+- or **Windows Task Scheduler** running `python -m app.jobs.daily_refresh`.
+- [.github/workflows/cron-weekly.yml](.github/workflows/cron-weekly.yml)
+  (Supabase-only: `precompute_similarity`, `compute_stat_titles`) runs fine on
+  hosted runners.
 
-**Cloud scheduling (recommended for production):**
-- Render: add a Cron Job pointing at the same command.
-- Supabase: pg_cron with a `pg_net.http_post` call to a deployed cron endpoint.
+## Monitoring
 
-The refresh job is idempotent — running multiple times in a day is safe.
+- **UptimeRobot** (free): monitor the backend `/health` and the frontend URL.
+- App logs: the host captures stdout from uvicorn.
 
 ## Production checklist
 
-- [ ] All migrations 001–011 applied to the Supabase project.
-- [ ] Backend deployed, `/health` returns `{"status":"ok"}`.
-- [ ] Frontend deployed, `NEXT_PUBLIC_API_BASE` points at the backend.
-- [ ] CORS origins on the backend match the frontend domain.
-- [ ] Nightly refresh scheduled.
+- [ ] Backend deployed (Docker), `/health` returns ok.
+- [ ] `API_CORS_ORIGINS` includes the exact frontend domain(s).
+- [ ] Frontend deployed; `NEXT_PUBLIC_API_BASE` + `NEXT_PUBLIC_SITE_URL` set.
+- [ ] `curl https://<backend>/live/scoreboard` returns today's games.
+- [ ] Nightly refresh scheduled on a residential IP.
+- [ ] UptimeRobot monitors green.

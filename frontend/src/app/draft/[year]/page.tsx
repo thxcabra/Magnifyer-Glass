@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DraftClassGrid } from "@/components/draft-class-grid";
@@ -5,6 +6,19 @@ import { api } from "@/lib/api";
 import { getServerT } from "@/lib/locale-server";
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ year: string }>;
+}): Promise<Metadata> {
+  const { year } = await params;
+  return {
+    title: `${year} NBA Draft class`,
+    description: `${year} NBA Draft — every pick, classified by tactical archetype and linked to a full player profile with stats, body composition, and NBA comparisons.`,
+    alternates: { canonical: `/draft/${year}` },
+  };
+}
 
 export default async function DraftYearPage({
   params,
@@ -64,11 +78,3 @@ export default async function DraftYearPage({
   );
 }
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: Promise<{ year: string }>;
-}) => {
-  const { year } = await params;
-  return { title: `${year} NBA Draft - Magnifyer Glass` };
-};

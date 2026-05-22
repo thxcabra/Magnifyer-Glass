@@ -1,14 +1,29 @@
-import { cookies } from "next/headers";
-import { COOKIE_NAME, DEFAULT_LOCALE, isLocale, translate, type Locale } from "./i18n";
+import { cookies, headers } from "next/headers";
+import { COOKIE_NAME, isLocale, translate, type Locale } from "./i18n";
+import { DEFAULT_THEME, isTheme, THEME_COOKIE, type Theme } from "./theme";
+
+/** Server-component helper: reads the theme cookie. Defaults to dark. */
+export async function getServerTheme(): Promise<Theme> {
+  const store = await cookies();
+  const v = store.get(THEME_COOKIE)?.value;
+  return isTheme(v) ? v : DEFAULT_THEME;
+}
 
 /**
- * Server-component helper: reads the locale cookie and returns the active
- * locale + a bound translate function. Call from any `async` page or layout.
+ * Active locale: an explicit cookie choice wins; otherwise we detect from the
+ * browser's Accept-Language. This is a Brazilian-first product, so anything
+ * that isn't clearly English falls back to pt-BR.
  */
 export async function getServerLocale(): Promise<Locale> {
   const store = await cookies();
   const v = store.get(COOKIE_NAME)?.value;
-  return isLocale(v) ? v : DEFAULT_LOCALE;
+  if (isLocale(v)) return v;
+
+  const al = ((await headers()).get("accept-language") || "").toLowerCase();
+  const first = al.split(",")[0]?.trim() ?? "";
+  if (first.startsWith("en")) return "en";
+  if (first.startsWith("pt")) return "pt-BR";
+  return al.includes("en") && !al.includes("pt") ? "en" : "pt-BR";
 }
 
 export async function getServerT(): Promise<{

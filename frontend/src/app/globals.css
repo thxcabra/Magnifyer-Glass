@@ -48,47 +48,49 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Magnifyer Glass - dark by default with a basketball-orange accent.
- * The light theme remains available via the rare opt-in for browsers that
- * actively prefer it, but the platform's identity is the dark skin. */
+/* Magnifyer Glass - basketball-orange accent on either skin.
+ * :root is the LIGHT theme (white surfaces, warm orange); `.dark` below is the
+ * dark skin. The active theme is set by a cookie-driven class on <html>. */
 :root {
-  --background: oklch(0.16 0.012 250);
-  --foreground: oklch(0.96 0.005 250);
-  --card: oklch(0.20 0.012 250);
-  --card-foreground: oklch(0.96 0.005 250);
-  --popover: oklch(0.20 0.012 250);
-  --popover-foreground: oklch(0.96 0.005 250);
-  --primary: oklch(0.74 0.18 47);                /* basketball orange */
-  --primary-foreground: oklch(0.16 0.012 250);
-  --secondary: oklch(0.26 0.012 250);
-  --secondary-foreground: oklch(0.96 0.005 250);
-  --muted: oklch(0.24 0.010 250);
-  --muted-foreground: oklch(0.68 0.012 250);
-  --accent: oklch(0.27 0.012 250);
-  --accent-foreground: oklch(0.96 0.005 250);
-  --destructive: oklch(0.66 0.22 25);
-  --border: oklch(1 0 0 / 11%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.74 0.18 47 / 60%);
-  --chart-1: oklch(0.74 0.18 47);                /* orange */
-  --chart-2: oklch(0.72 0.14 200);               /* teal */
-  --chart-3: oklch(0.66 0.18 295);               /* violet */
-  --chart-4: oklch(0.78 0.16 145);               /* lime */
-  --chart-5: oklch(0.70 0.18 350);               /* magenta */
+  color-scheme: light;
+  --background: oklch(0.985 0.004 250);          /* near-white, faint cool */
+  --foreground: oklch(0.22 0.02 260);            /* dark slate ink */
+  --card: oklch(1 0 0);                          /* pure white */
+  --card-foreground: oklch(0.22 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 260);
+  --primary: oklch(0.66 0.20 45);                /* basketball orange (deeper for white bg) */
+  --primary-foreground: oklch(0.99 0.01 80);
+  --secondary: oklch(0.965 0.006 250);
+  --secondary-foreground: oklch(0.26 0.02 260);
+  --muted: oklch(0.965 0.006 250);
+  --muted-foreground: oklch(0.50 0.02 260);
+  --accent: oklch(0.95 0.04 60);                 /* light warm-orange tint */
+  --accent-foreground: oklch(0.34 0.08 50);
+  --destructive: oklch(0.58 0.22 25);
+  --border: oklch(0.90 0.008 260);
+  --input: oklch(0.92 0.008 260);
+  --ring: oklch(0.66 0.20 45 / 50%);
+  --chart-1: oklch(0.66 0.20 45);                /* orange */
+  --chart-2: oklch(0.62 0.14 200);               /* teal */
+  --chart-3: oklch(0.56 0.18 295);               /* violet */
+  --chart-4: oklch(0.62 0.16 145);               /* green */
+  --chart-5: oklch(0.60 0.20 350);               /* magenta */
   --radius: 0.625rem;
-  --sidebar: oklch(0.18 0.012 250);
-  --sidebar-foreground: oklch(0.96 0.005 250);
-  --sidebar-primary: oklch(0.74 0.18 47);
-  --sidebar-primary-foreground: oklch(0.16 0.012 250);
-  --sidebar-accent: oklch(0.27 0.012 250);
-  --sidebar-accent-foreground: oklch(0.96 0.005 250);
-  --sidebar-border: oklch(1 0 0 / 11%);
-  --sidebar-ring: oklch(0.74 0.18 47 / 60%);
+  --sidebar: oklch(0.985 0.004 250);
+  --sidebar-foreground: oklch(0.22 0.02 260);
+  --sidebar-primary: oklch(0.66 0.20 45);
+  --sidebar-primary-foreground: oklch(0.99 0.01 80);
+  --sidebar-accent: oklch(0.95 0.04 60);
+  --sidebar-accent-foreground: oklch(0.34 0.08 50);
+  --sidebar-border: oklch(0.90 0.008 260);
+  --sidebar-ring: oklch(0.66 0.20 45 / 50%);
 }
 
 /* `.dark` mirrors :root - both keep the orange-accent dark identity.
  * We leave the selector around for components that target `dark:` directly. */
 .dark {
+  color-scheme: dark;
   --background: oklch(0.16 0.012 250);
   --foreground: oklch(0.96 0.005 250);
   --card: oklch(0.20 0.012 250);
@@ -122,12 +124,6 @@
   --sidebar-ring: oklch(0.74 0.18 47 / 60%);
 }
 
-/* Force the dark identity at the document root so platform-level UI
- * (scrollbar, form widgets, hover-card portals) picks it up too. */
-html {
-  color-scheme: dark;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -137,5 +133,9 @@ html {
   }
   html {
     @apply font-sans;
+    /* Base bumped from the 16px browser default for a more comfortable,
+     * fan-friendly read. Tailwind sizes/spacing are rem-based, so everything
+     * scales proportionally. */
+    font-size: 19px;
   }
 }

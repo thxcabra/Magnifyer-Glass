@@ -16,9 +16,8 @@ import argparse
 import pandas as pd
 
 from app.core.supabase_client import get_supabase
-from app.services.archetypes import ARCHETYPES, classify, fit_scores, fit_scores
+from app.services.archetypes import ARCHETYPES, classify, fit_scores
 from app.services.features import load_player_features
-from app.services.normalization import PHYS_FEATURES
 
 # Players below this bar don't get an archetype assigned. The archetype
 # label is meaningless for end-of-bench cups of coffee — better NULL than wrong.
@@ -102,8 +101,6 @@ def run() -> None:
     if nba_df.empty:
         print("Empty NBA corpus. Aborting.")
         return
-
-    nba_pct = compute_percentile_frame(nba_df)
 
     print("Loading prospects...")
     prospect_df = load_player_features(is_nba=False)

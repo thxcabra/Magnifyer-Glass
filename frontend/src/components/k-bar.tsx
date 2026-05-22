@@ -370,9 +370,9 @@ export function KBar() {
                   key={`a-${key}`}
                   value={`archetype-${key}`}
                   onSelect={() =>
-                    go(`/discovery?archetype=${key}`, {
+                    go(`/players?archetype=${key}`, {
                       kind: "archetype",
-                      href: `/discovery?archetype=${key}`,
+                      href: `/players?archetype=${key}`,
                       label: meta.label,
                       meta: "archetype",
                     })
