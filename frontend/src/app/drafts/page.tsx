@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { useLocale } from "@/components/locale-provider";
 
 const YEARS: number[] = Array.from({ length: 41 }, (_, i) => 2025 - i);
@@ -29,49 +29,49 @@ export default function DraftsIndexPage() {
   }, [query]);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">{t("nav.drafts")}</p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">{t("drafts.title")}</h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("drafts.sub")}</p>
+    <PageShell>
+      <PageHeader kicker={t("nav.drafts")} title={t("drafts.title")} subtitle={t("drafts.sub")}>
+        <div className="w-full max-w-xs sm:w-56">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("drafts.placeholder")}
+            className="rounded-full"
+          />
+        </div>
+      </PageHeader>
 
-      <div className="mt-6 max-w-sm">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("drafts.placeholder")}
-          className="text-sm"
-        />
-      </div>
-
-      <div className="mt-10 space-y-8">
-        {DECADE_HEADERS.map(({ label, range }) => {
-          const years = YEARS.filter(
-            (y) => y >= range[0] && y <= range[1] && visible.has(y),
-          );
-          if (years.length === 0) return null;
-          return (
-            <section key={label}>
-              <h2 className="text-muted-foreground border-b pb-2 text-xs tracking-wide uppercase">
-                {label}
-              </h2>
-              <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-6">
-                {years.map((y) => (
-                  <Link key={y} href={`/draft/${y}`}>
-                    <Card className="hover:bg-accent/40 transition-colors">
-                      <CardContent className="py-4 text-center">
-                        <div className="text-lg font-semibold tracking-tight">{y}</div>
-                        <div className="text-muted-foreground mt-1 text-[10px] tracking-wide uppercase">
-                          {t("common.draft")}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          );
-        })}
-      </div>
-    </div>
+      <SectionCard>
+        <div className="space-y-7">
+          {DECADE_HEADERS.map(({ label, range }) => {
+            const years = YEARS.filter(
+              (y) => y >= range[0] && y <= range[1] && visible.has(y),
+            );
+            if (years.length === 0) return null;
+            return (
+              <section key={label}>
+                <h3 className="text-muted-foreground mb-3 text-xs tracking-wide uppercase">
+                  {label}
+                </h3>
+                <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 lg:grid-cols-6">
+                  {years.map((y) => (
+                    <Link
+                      key={y}
+                      href={`/draft/${y}`}
+                      className="bg-muted hover:bg-accent hover:text-accent-foreground rounded-2xl py-4 text-center transition-colors"
+                    >
+                      <div className="font-heading text-lg font-bold tracking-tight">{y}</div>
+                      <div className="text-muted-foreground mt-1 text-[10px] tracking-wide uppercase">
+                        {t("common.draft")}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      </SectionCard>
+    </PageShell>
   );
 }

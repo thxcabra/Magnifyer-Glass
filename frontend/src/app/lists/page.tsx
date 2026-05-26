@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PlayerHeadshot } from "@/components/player-headshot";
 import { TeamLogo } from "@/components/team-logo";
 import { ArchetypeBadge } from "@/components/archetype-badge";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { useLocale } from "@/components/locale-provider";
 import { api } from "@/lib/api";
 
@@ -80,34 +81,35 @@ export default function ListsPage() {
   }, [selectedAward]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">{t("nav.lists")}</p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">{t("lists.title")}</h1>
-      <p className="text-muted-foreground mt-2 max-w-2xl text-sm">{t("lists.intro")}</p>
+    <PageShell>
+      <PageHeader kicker={t("nav.lists")} title={t("lists.title")} subtitle={t("lists.intro")}>
+        <div className="w-full max-w-xs sm:w-56">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("lists.placeholder")}
+            className="rounded-full"
+          />
+        </div>
+      </PageHeader>
 
-      <div className="mt-6 max-w-sm">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("lists.placeholder")}
-        />
-      </div>
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-[260px_1fr]">
-        <AwardListColumn
-          selected={selectedAward}
-          onSelect={setSelectedAward}
-          heading={t("lists.awards_heading")}
-        />
-        <AwardDetail
-          award={selectedAward}
-          entries={history}
-          loading={loading}
-          query={query.trim().toLowerCase()}
-          t={t}
-        />
-      </div>
-    </div>
+      <SectionCard>
+        <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+          <AwardListColumn
+            selected={selectedAward}
+            onSelect={setSelectedAward}
+            heading={t("lists.awards_heading")}
+          />
+          <AwardDetail
+            award={selectedAward}
+            entries={history}
+            loading={loading}
+            query={query.trim().toLowerCase()}
+            t={t}
+          />
+        </div>
+      </SectionCard>
+    </PageShell>
   );
 }
 
@@ -131,10 +133,10 @@ function AwardListColumn({
             type="button"
             onClick={() => onSelect(a)}
             className={
-              "block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors " +
+              "block w-full rounded-full px-3 py-1.5 text-left text-sm transition-colors " +
               (selected === a
-                ? "bg-primary/15 text-primary"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground")
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground")
             }
           >
             {t(`award.${a}`)}
@@ -198,7 +200,7 @@ function AwardDetail({
   return (
     <section className="space-y-6">
       <div className="border-b pb-2">
-        <h2 className="inline-flex items-center gap-2 text-2xl font-semibold tracking-tight">
+        <h2 className="font-heading inline-flex items-center gap-2 text-2xl font-bold tracking-tight">
           {icon && <span aria-hidden>{icon}</span>}
           {label}
         </h2>
@@ -241,7 +243,7 @@ function PlayerHoneeRow({
   teamAbbr: string | null;
 }) {
   return (
-    <li className="hover:bg-accent/40 -mx-1.5 flex items-center gap-2.5 rounded px-1.5 py-1 transition-colors">
+    <li className="hover:bg-accent -mx-1.5 flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-colors">
       <Link
         href={`/players/${player.slug}`}
         className="flex min-w-0 flex-1 items-center gap-2.5"
@@ -300,7 +302,7 @@ function ChampionsList({
   return (
     <section className="space-y-6">
       <div className="border-b pb-2">
-        <h2 className="inline-flex items-center gap-2 text-2xl font-semibold tracking-tight">
+        <h2 className="font-heading inline-flex items-center gap-2 text-2xl font-bold tracking-tight">
           {icon && <span aria-hidden>{icon}</span>}
           {label}
         </h2>
@@ -315,12 +317,12 @@ function ChampionsList({
             <Link
               key={`${season}-${team}`}
               href={`/teams/${team}?season=${encodeURIComponent(season)}`}
-              className="group flex items-center gap-3 rounded-lg border bg-card px-3 py-3 transition-colors hover:bg-accent/40"
+              className="group flex items-center gap-3 rounded-2xl bg-muted px-3 py-3 transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               <TeamLogo team={team} size={44} />
               <div className="min-w-0">
                 <div className="font-mono text-xs text-muted-foreground">{season}</div>
-                <div className="text-base font-semibold tracking-tight">{team}</div>
+                <div className="font-heading text-base font-bold tracking-tight">{team}</div>
                 <div className="text-muted-foreground text-[11px]">NBA Champions</div>
               </div>
             </Link>

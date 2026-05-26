@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerHeadshot } from "@/components/player-headshot";
 import { TeamLogo } from "@/components/team-logo";
 import { ArchetypeBadge } from "@/components/archetype-badge";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { ARCHETYPE_META } from "@/lib/stat-meta";
 import { useLocale } from "@/components/locale-provider";
 import type { Player } from "@/lib/api";
@@ -48,54 +49,52 @@ export function PlayersExplorer({
   }, [players, query, filter, archetype]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">{t("nav.players")}</p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">{t("players.title")}</h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("players.sub")}</p>
+    <PageShell>
+      <PageHeader kicker={t("nav.players")} title={t("players.title")} subtitle={t("players.sub")} />
+      <SectionCard>
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("players.search_placeholder")}
+            className="max-w-sm rounded-full"
+          />
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
+            <TabsList>
+              <TabsTrigger value="classified" className="text-xs">
+                {t("players.tab_classified")}
+              </TabsTrigger>
+              <TabsTrigger value="unclassified" className="text-xs">
+                {t("players.tab_unclassified")}
+              </TabsTrigger>
+              <TabsTrigger value="all" className="text-xs">
+                {t("players.tab_all")}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <span className="text-muted-foreground ml-auto text-xs">
+            {t("players.count_shown", { shown: filtered.length, total: players.length })}
+          </span>
+        </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("players.search_placeholder")}
-          className="max-w-sm"
-        />
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
-          <TabsList>
-            <TabsTrigger value="classified" className="text-xs">
-              {t("players.tab_classified")}
-            </TabsTrigger>
-            <TabsTrigger value="unclassified" className="text-xs">
-              {t("players.tab_unclassified")}
-            </TabsTrigger>
-            <TabsTrigger value="all" className="text-xs">
-              {t("players.tab_all")}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <span className="text-muted-foreground ml-auto text-xs">
-          {t("players.count_shown", { shown: filtered.length, total: players.length })}
-        </span>
-      </div>
+        {archetype && ARCHETYPE_META[archetype as keyof typeof ARCHETYPE_META] && (
+          <button
+            type="button"
+            onClick={() => setArchetype(null)}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 mb-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+          >
+            {ARCHETYPE_META[archetype as keyof typeof ARCHETYPE_META].label}
+            <span aria-hidden>✕</span>
+          </button>
+        )}
 
-      {archetype && ARCHETYPE_META[archetype as keyof typeof ARCHETYPE_META] && (
-        <button
-          type="button"
-          onClick={() => setArchetype(null)}
-          className="bg-primary/15 text-primary hover:bg-primary/25 mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors"
-        >
-          {ARCHETYPE_META[archetype as keyof typeof ARCHETYPE_META].label}
-          <span aria-hidden>✕</span>
-        </button>
-      )}
-
-      {filtered.length === 0 ? (
-        <p className="text-muted-foreground mt-10 text-sm">{t("common.no_matches")}</p>
-      ) : (
-        <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => (
-            <Link key={p.id} href={`/players/${p.slug}`}>
-              <div className="hover:bg-accent/40 flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors">
+        {filtered.length === 0 ? (
+          <p className="text-muted-foreground py-8 text-center text-sm">{t("common.no_matches")}</p>
+        ) : (
+          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((p) => (
+              <Link key={p.id} href={`/players/${p.slug}`}>
+                <div className="hover:bg-accent flex items-center gap-3 rounded-2xl bg-muted p-3 transition-colors">
                 <PlayerHeadshot
                   externalId={p.external_id}
                   url={p.headshot_url}
@@ -134,11 +133,12 @@ export function PlayersExplorer({
                     </div>
                   )}
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </SectionCard>
+    </PageShell>
   );
 }

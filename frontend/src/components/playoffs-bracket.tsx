@@ -3,7 +3,7 @@ import type { PlayoffSeries } from "@/lib/api";
 
 function SeriesCard({ s }: { s: PlayoffSeries }) {
   return (
-    <div className="bg-card w-44 rounded-md border p-2.5 text-sm">
+    <div className="bg-muted w-44 rounded-2xl p-3 text-sm">
       {s.teams.map((tm) => {
         const isWinner = s.winner === tm.tricode;
         return (
@@ -52,7 +52,7 @@ function Column({
         {items.length > 0 ? (
           items.map((s, i) => <SeriesCard key={i} s={s} />)
         ) : (
-          <div className="bg-card/40 text-muted-foreground flex h-16 w-44 items-center justify-center rounded-md border border-dashed text-xs">
+          <div className="bg-muted/50 text-muted-foreground flex h-16 w-44 items-center justify-center rounded-2xl border border-dashed border-border text-xs">
             {placeholder ?? "—"}
           </div>
         )}

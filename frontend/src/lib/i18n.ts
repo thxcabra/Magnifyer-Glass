@@ -30,6 +30,8 @@ type Dict = Record<string, string>;
 
 const EN: Dict = {
   // Nav
+  "nav.home": "Home",
+  "nav.news": "News",
   "nav.teams": "Teams",
   "nav.players": "Players",
   "nav.drafts": "Drafts",
@@ -206,6 +208,9 @@ const EN: Dict = {
   "teams.sub": "Every active franchise, split by conference. Click a team to see its roster - defaults to the most recent season, with a season selector to step through history.",
   "teams.placeholder": "Filter teams by name, city, or abbreviation...",
   "teams.other": "Other",
+  "teams.all": "All Teams",
+  "teams.east": "East",
+  "teams.west": "West",
 
   // Teams
   "team.franchise": "Franchise",
@@ -409,6 +414,8 @@ const EN: Dict = {
 
 const PT_BR: Dict = {
   // Nav
+  "nav.home": "Início",
+  "nav.news": "Notícias",
   "nav.teams": "Times",
   "nav.players": "Jogadores",
   "nav.drafts": "Drafts",
@@ -585,6 +592,9 @@ const PT_BR: Dict = {
   "teams.sub": "Toda franquia ativa, dividida por conferência. Clique em um time para ver o elenco - abre na temporada mais recente, com seletor para navegar pelo histórico.",
   "teams.placeholder": "Filtre times por nome, cidade ou sigla...",
   "teams.other": "Outros",
+  "teams.all": "Todos os times",
+  "teams.east": "Leste",
+  "teams.west": "Oeste",
 
   // Teams
   "team.franchise": "Franquia",

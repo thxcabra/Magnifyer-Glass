@@ -59,19 +59,19 @@ export function ScheduleBrowser({ dates }: { dates: ScheduleDate[] }) {
   );
 
   return (
-    <div className="mt-6">
+    <div>
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => setIdx((i) => Math.max(0, i - 1))}
           disabled={safeIdx <= 0}
-          className="hover:bg-accent inline-flex size-10 items-center justify-center rounded-md border disabled:opacity-40"
+          className="hover:bg-accent inline-flex size-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
           aria-label="Anterior"
         >
           <ChevronLeft className="size-5" />
         </button>
         <div className="text-center">
-          <div className="text-lg font-semibold capitalize">{label}</div>
+          <div className="font-heading text-lg font-bold capitalize">{label}</div>
           {safeIdx !== todayIdx && (
             <button
               type="button"
@@ -86,7 +86,7 @@ export function ScheduleBrowser({ dates }: { dates: ScheduleDate[] }) {
           type="button"
           onClick={() => setIdx((i) => Math.min(days.length - 1, i + 1))}
           disabled={safeIdx >= days.length - 1}
-          className="hover:bg-accent inline-flex size-10 items-center justify-center rounded-md border disabled:opacity-40"
+          className="hover:bg-accent inline-flex size-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
           aria-label="Próximo"
         >
           <ChevronRight className="size-5" />

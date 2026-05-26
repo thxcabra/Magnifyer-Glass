@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { use } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PlayerHeadshot } from "@/components/player-headshot";
 import { TeamLogo } from "@/components/team-logo";
 import { ArchetypeBadge } from "@/components/archetype-badge";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { useLocale } from "@/components/locale-provider";
 import { api } from "@/lib/api";
 
@@ -59,46 +59,49 @@ export default function ListAwardPage({
   const awardLabel = t(labelKey) === labelKey ? award : t(labelKey);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">{t("nav.lists")}</p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">{awardLabel}</h1>
-      <p className="text-muted-foreground mt-2 text-sm">
-        {entries.length}{" "}
-        {entries.length === 1 ? t("common.entry") : t("common.entries")}{" "}
-        {t("lists.across_catalog")}
-      </p>
-
-      <div className="mt-6 flex items-center gap-3">
+    <PageShell>
+      <PageHeader
+        kicker={t("nav.lists")}
+        title={awardLabel}
+        subtitle={`${entries.length} ${
+          entries.length === 1 ? t("common.entry") : t("common.entries")
+        } ${t("lists.across_catalog")}`}
+      >
         <Link
           href="/lists"
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           ← {t("lists.all_lists")}
         </Link>
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("lists.filter_placeholder")}
-          className="max-w-sm"
-        />
-      </div>
+      </PageHeader>
 
-      {loading ? (
-        <p className="text-muted-foreground mt-10 text-sm">{t("common.loading")}</p>
-      ) : bySeason.length === 0 ? (
-        <p className="text-muted-foreground mt-10 text-sm">{t("common.no_matches")}</p>
-      ) : (
-        <div className="mt-10 space-y-6">
-          {bySeason.map(([season, items]) => (
-            <section key={season}>
-              <h2 className="text-muted-foreground border-b pb-1 font-mono text-xs tracking-wide uppercase">
-                {season}
-              </h2>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {items.map((e) => (
-                  <Link key={`${season}-${e.player.id}`} href={`/players/${e.player.slug}`}>
-                    <Card className="hover:bg-accent/40 transition-colors">
-                      <CardContent className="flex items-center gap-3 py-3">
+      <SectionCard
+        headerRight={
+          <div className="w-full max-w-xs sm:w-64">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("lists.filter_placeholder")}
+              className="rounded-full"
+            />
+          </div>
+        }
+      >
+        {loading ? (
+          <p className="text-muted-foreground py-8 text-center text-sm">{t("common.loading")}</p>
+        ) : bySeason.length === 0 ? (
+          <p className="text-muted-foreground py-8 text-center text-sm">{t("common.no_matches")}</p>
+        ) : (
+          <div className="space-y-6">
+            {bySeason.map(([season, items]) => (
+              <section key={season}>
+                <h3 className="text-muted-foreground mb-3 font-mono text-[11px] tracking-wide uppercase">
+                  {season}
+                </h3>
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  {items.map((e) => (
+                    <Link key={`${season}-${e.player.id}`} href={`/players/${e.player.slug}`}>
+                      <div className="hover:bg-accent flex items-center gap-3 rounded-2xl bg-muted p-3 transition-colors">
                         <PlayerHeadshot
                           externalId={e.player.external_id}
                           url={e.player.headshot_url}
@@ -118,15 +121,15 @@ export default function ListAwardPage({
                             )}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
-    </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </SectionCard>
+    </PageShell>
   );
 }

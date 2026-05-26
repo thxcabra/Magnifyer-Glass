@@ -25,7 +25,7 @@ export function ThemeToggle({ initial }: { initial: Theme }) {
       onClick={toggle}
       aria-label={t("theme.toggle")}
       title={t("theme.toggle")}
-      className="hover:bg-accent inline-flex size-9 items-center justify-center rounded-md border transition-colors"
+      className="hover:bg-black/10 inline-flex size-9 items-center justify-center rounded-full border border-border/60 transition-colors"
     >
       {initial === "dark" ? (
         <Sun className="size-4" aria-hidden="true" />

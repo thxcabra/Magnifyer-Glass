@@ -136,7 +136,7 @@ export function StatTitleLeaders({ season, titles }: Props) {
       {/* Expanded leaderboard panel - rendered as a sibling so it spans the
           full row width on every viewport without disturbing the card grid. */}
       {openAward && activeCategory && (
-        <div className="mt-3 rounded-lg border bg-card p-4">
+        <div className="mt-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/10">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h3 className="inline-flex items-center gap-2 text-sm font-medium">
               <span aria-hidden>{STAT_ICONS[openAward]}</span>

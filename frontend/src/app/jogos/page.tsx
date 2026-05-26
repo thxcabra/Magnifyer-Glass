@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { api, type LiveScoreboard } from "@/lib/api";
 import { ScoreboardGrid } from "@/components/scoreboard-grid";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { getServerT } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -27,16 +28,11 @@ export default async function GamesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">
-        {t("live.today")}
-      </p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">
-        {t("games.title")}
-      </h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("games.sub")}</p>
-
-      <ScoreboardGrid initialData={initial} />
-    </div>
+    <PageShell>
+      <PageHeader kicker={t("live.today")} title={t("games.title")} subtitle={t("games.sub")} />
+      <SectionCard bodyClassName="-mt-6">
+        <ScoreboardGrid initialData={initial} />
+      </SectionCard>
+    </PageShell>
   );
 }

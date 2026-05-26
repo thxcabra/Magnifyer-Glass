@@ -7,6 +7,7 @@ import { PlayerHeadshot } from "@/components/player-headshot";
 import { TeamLogo } from "@/components/team-logo";
 import { ArchetypeBadge } from "@/components/archetype-badge";
 import { StatTitleLeaders } from "@/components/stat-title-leaders";
+import { PageShell, PageHeader } from "@/components/section-card";
 import { api } from "@/lib/api";
 import { getServerT } from "@/lib/locale-server";
 import { teamFullName } from "@/lib/team-names";
@@ -88,30 +89,27 @@ export default async function YearPage({
   const fmtSeason = (y: number) => `${y}-${(y + 1).toString().slice(-2)}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">{t("years.season")}</p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">{seasonStr}</h1>
-
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+    <PageShell>
+      <PageHeader kicker={t("years.season")} title={seasonStr}>
         <Link
           href={`/years/${fmtSeason(prevYear)}`}
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           ← {fmtSeason(prevYear)}
         </Link>
         <Link
           href="/years"
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           {t("years.all_years")}
         </Link>
         <Link
           href={`/years/${fmtSeason(nextYear)}`}
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           {fmtSeason(nextYear)} →
         </Link>
-      </div>
+      </PageHeader>
 
       {champion && (
         <Card className="mt-8 border-amber-500/40 bg-amber-500/5">
@@ -262,7 +260,7 @@ export default async function YearPage({
               <Link
                 key={p.id}
                 href={`/players/${p.slug}`}
-                className="hover:bg-accent/40 flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors"
+                className="hover:bg-accent flex items-center gap-3 rounded-2xl bg-card p-3 ring-1 ring-foreground/10 transition-colors"
               >
                 <span className="text-xl" aria-hidden>🏛️</span>
                 <PlayerHeadshot
@@ -294,7 +292,7 @@ export default async function YearPage({
           <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-2">
             {top_picks.map((p) => (
               <Link key={p.id} href={`/players/${p.slug}`}>
-                <div className="hover:bg-accent/40 flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors">
+                <div className="hover:bg-accent flex items-center gap-3 rounded-2xl bg-card p-3 ring-1 ring-foreground/10 transition-colors">
                   <span className="text-primary w-8 text-right font-mono text-sm font-semibold">
                     #{p.draft_number}
                   </span>
@@ -326,7 +324,7 @@ export default async function YearPage({
           </div>
         </section>
       )}
-    </div>
+    </PageShell>
   );
 }
 
@@ -470,7 +468,7 @@ function PlayoffBracket({
                 return (
                   <div
                     key={`${m.round}-${m.higher_seed_abbr}-${m.lower_seed_abbr}-${idx}`}
-                    className="rounded-md border bg-card px-2.5 py-2 text-xs"
+                    className="rounded-xl bg-muted px-2.5 py-2 text-xs"
                   >
                     <div className="flex items-center justify-between font-mono">
                       <Link

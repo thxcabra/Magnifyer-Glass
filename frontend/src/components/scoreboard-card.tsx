@@ -105,7 +105,7 @@ export function ScoreboardCard({ game }: { game: LiveGame }) {
   return (
     <Link
       href={`/jogos/${game.game_id}`}
-      className="hover:bg-accent/40 block rounded-lg border bg-card p-4 transition-colors"
+      className="hover:bg-accent block rounded-2xl bg-muted p-4 transition-colors"
     >
       <div className="mb-3 flex items-center justify-between">
         <StatusBadge game={game} t={t} />

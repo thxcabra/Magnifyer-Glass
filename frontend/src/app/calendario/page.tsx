@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { api, type ScheduleResponse } from "@/lib/api";
 import { ScheduleBrowser } from "@/components/schedule-browser";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { getServerT } from "@/lib/locale-server";
 
 export const revalidate = 3600;
@@ -25,16 +26,15 @@ export default async function CalendarPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">
-        {t("nav.schedule")}
-      </p>
-      <h1 className="mt-1 text-4xl font-bold tracking-tight">
-        {t("schedule.title")}
-      </h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("schedule.sub")}</p>
-
-      <ScheduleBrowser dates={schedule?.game_dates ?? []} />
-    </div>
+    <PageShell>
+      <PageHeader
+        kicker={t("nav.schedule")}
+        title={t("schedule.title")}
+        subtitle={t("schedule.sub")}
+      />
+      <SectionCard>
+        <ScheduleBrowser dates={schedule?.game_dates ?? []} />
+      </SectionCard>
+    </PageShell>
   );
 }

@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { useLocale } from "@/components/locale-provider";
 import { api } from "@/lib/api";
 
@@ -28,46 +28,50 @@ export default function YearsIndexPage() {
   }, [seasons, query]);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">
-        {t("nav.years")}
-      </p>
-      <h1 className="mt-1 text-4xl font-semibold tracking-tight">
-        {t("years.all_years")}
-      </h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("years.index_sub")}</p>
+    <PageShell>
+      <PageHeader
+        kicker={t("nav.years")}
+        title={t("years.all_years")}
+        subtitle={t("years.index_sub")}
+      >
+        <div className="w-full max-w-xs sm:w-56">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("years.index_placeholder")}
+            className="rounded-full"
+          />
+        </div>
+      </PageHeader>
 
-      <div className="mt-6 max-w-sm">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("years.index_placeholder")}
-        />
-      </div>
+      <SectionCard>
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 lg:grid-cols-6">
+          {loading
+            ? Array.from({ length: 12 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-muted rounded-2xl py-5 text-center font-mono text-sm opacity-50"
+                >
+                  …
+                </div>
+              ))
+            : visible.map((s) => (
+                <Link
+                  key={s}
+                  href={`/years/${s}`}
+                  className="bg-muted hover:bg-accent hover:text-accent-foreground rounded-2xl py-5 text-center transition-colors"
+                >
+                  <div className="font-heading text-lg font-bold tracking-tight">{s}</div>
+                </Link>
+              ))}
+        </div>
 
-      <div className="mt-10 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-6">
-        {loading
-          ? Array.from({ length: 12 }).map((_, i) => (
-              <Card key={i} className="opacity-50">
-                <CardContent className="py-5 text-center font-mono text-sm">
-                  ...
-                </CardContent>
-              </Card>
-            ))
-          : visible.map((s) => (
-              <Link key={s} href={`/years/${s}`}>
-                <Card className="hover:bg-accent/40 transition-colors">
-                  <CardContent className="py-5 text-center">
-                    <div className="font-mono text-lg font-semibold tracking-tight">{s}</div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-      </div>
-
-      {!loading && visible.length === 0 && (
-        <p className="text-muted-foreground mt-10 text-sm">{t("common.no_matches")}</p>
-      )}
-    </div>
+        {!loading && visible.length === 0 && (
+          <p className="text-muted-foreground mt-6 text-center text-sm">
+            {t("common.no_matches")}
+          </p>
+        )}
+      </SectionCard>
+    </PageShell>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { api, type BoxScore } from "@/lib/api";
 import { GameLiveView } from "@/components/game-live-view";
+import { PageShell } from "@/components/section-card";
 import { getServerT } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
@@ -45,16 +46,14 @@ export default async function GamePage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <PageShell>
       <Link
         href="/jogos"
-        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+        className="text-muted-foreground hover:bg-accent hover:text-foreground inline-flex w-fit rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
       >
         ← {t("games.title")}
       </Link>
-      <div className="mt-4">
-        <GameLiveView gameId={gameId} initialBox={initialBox} />
-      </div>
-    </div>
+      <GameLiveView gameId={gameId} initialBox={initialBox} />
+    </PageShell>
   );
 }

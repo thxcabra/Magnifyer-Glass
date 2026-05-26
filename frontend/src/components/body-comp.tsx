@@ -103,7 +103,7 @@ export function BodyComp({ frames }: BodyCompProps) {
                 renders nearly empty, so we skip it and keep just the table. */}
             {f.height_in !== null &&
               (f.standing_reach_in !== null || f.wingspan_in !== null) && (
-              <div className="bg-muted/40 relative h-40 overflow-hidden rounded-lg border">
+              <div className="bg-muted/40 relative h-40 overflow-hidden rounded-2xl">
                 {f.standing_reach_in !== null && (
                   <div
                     className="absolute right-0 left-0 border-t-2 border-dashed"
@@ -158,14 +158,14 @@ function UnitToggle({
 }) {
   const { t } = useLocale();
   return (
-    <div className="inline-flex items-center gap-1 rounded-md border bg-card p-0.5 text-[10px]">
+    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-0.5 text-[10px]">
       <button
         type="button"
         onClick={() => setUnits("imperial")}
         className={
-          "rounded px-2 py-0.5 font-medium transition-colors " +
+          "rounded-full px-2.5 py-0.5 font-medium transition-colors " +
           (units === "imperial"
-            ? "bg-foreground text-background"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:text-foreground")
         }
       >
@@ -175,9 +175,9 @@ function UnitToggle({
         type="button"
         onClick={() => setUnits("metric")}
         className={
-          "rounded px-2 py-0.5 font-medium transition-colors " +
+          "rounded-full px-2.5 py-0.5 font-medium transition-colors " +
           (units === "metric"
-            ? "bg-foreground text-background"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:text-foreground")
         }
       >

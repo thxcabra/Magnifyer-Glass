@@ -419,7 +419,7 @@ export function KBarTrigger() {
       onClick={() => {
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
       }}
-      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm shadow-xs"
+      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-full items-center justify-between gap-2 rounded-full border border-sidebar-border bg-card px-3.5 text-sm"
     >
       <span className="text-xs">Search anything</span>
       <kbd className="bg-muted text-muted-foreground pointer-events-none ml-2 inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px]">

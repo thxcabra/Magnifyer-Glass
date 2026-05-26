@@ -7,6 +7,7 @@ import { PlayerHeadshot } from "@/components/player-headshot";
 import { TeamLogo } from "@/components/team-logo";
 import { ArchetypeBadge } from "@/components/archetype-badge";
 import { StatLegend } from "@/components/stat-legend";
+import { PageShell, SectionCard } from "@/components/section-card";
 import { api } from "@/lib/api";
 import { TEAM_LORE } from "@/lib/team-lore";
 import { CollapsibleList } from "@/components/collapsible-list";
@@ -68,9 +69,9 @@ export default async function TeamPage({
     .catch(() => []);
 
   return (
-    <div>
-      {/* Immersive team-tinted header banner */}
-      <section className="relative isolate overflow-hidden border-b">
+    <PageShell>
+      {/* Immersive team-tinted header card */}
+      <section className="bg-card relative isolate overflow-hidden rounded-3xl ring-1 ring-foreground/10">
         <div
           aria-hidden
           className="absolute inset-0 opacity-35"
@@ -80,9 +81,9 @@ export default async function TeamPage({
         />
         <div
           aria-hidden
-          className="from-background via-background/75 absolute inset-0 bg-gradient-to-t to-transparent"
+          className="from-card via-card/75 absolute inset-0 bg-gradient-to-t to-transparent"
         />
-        <div className="relative mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-6 px-6 pt-10 pb-8">
+        <div className="relative flex flex-wrap items-end justify-between gap-6 px-6 pt-10 pb-8">
           <div className="flex items-center gap-5">
             <TeamLogo team={team.abbreviation} size={104} />
             <div>
@@ -125,7 +126,7 @@ export default async function TeamPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-6 py-10">
+      <div className="mt-6 space-y-6">
       {title_seasons.length > 0 && (
         <ChampionshipsRow
           abbreviation={team.abbreviation}
@@ -183,7 +184,7 @@ export default async function TeamPage({
       )}
 
       {is_champion_this_season && activeSeason && (
-        <div className="mt-6 flex items-center gap-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-200">
+        <div className="flex items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-200">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -199,9 +200,9 @@ export default async function TeamPage({
         </div>
       )}
 
-      <Card className="mt-10">
+      <Card className="rounded-3xl">
         <CardHeader>
-          <CardTitle className="text-base font-medium">
+          <CardTitle className="font-heading text-lg font-bold">
             {t("team.roster")}
             {activeSeason && (
               <span className="text-muted-foreground ml-2 text-xs font-normal">
@@ -304,17 +305,12 @@ export default async function TeamPage({
       </Card>
 
       {news.length > 0 && (
-        <div className="mt-10">
-          <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
-            {t("news.title")}
-          </h2>
-          <div className="rounded-lg border bg-card p-4">
-            <NewsList items={news} locale={locale} />
-          </div>
-        </div>
+        <SectionCard title={t("news.title")}>
+          <NewsList items={news} locale={locale} />
+        </SectionCard>
       )}
       </div>
-    </div>
+    </PageShell>
   );
 }
 
@@ -347,10 +343,10 @@ function SeasonSelector({
               href={`/teams/${abbreviation}?season=${s}`}
               title={isTitle ? translate(locale, "team.champion_banner_title", { season: s }) : undefined}
               className={
-                "inline-flex items-center gap-1 rounded-md border px-2.5 py-1 font-mono text-xs transition-colors " +
+                "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-mono text-xs transition-colors " +
                 (isActive
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-input bg-background hover:bg-accent")
+                  ? "border-transparent bg-primary text-primary-foreground"
+                  : "border-border bg-card hover:bg-accent")
               }
             >
               {isTitle && <span aria-hidden>🏆</span>}
@@ -377,7 +373,7 @@ function ChampionshipsRow({
   locale: Locale;
 }) {
   return (
-    <div className="mt-6 rounded-lg border bg-card px-4 py-3">
+    <div className="rounded-2xl bg-card px-4 py-3 ring-1 ring-foreground/10">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="text-muted-foreground inline-flex items-center gap-1.5 text-xs tracking-wide uppercase">
           {translate(locale, "team.champions_count")} · {titleSeasons.length}
@@ -391,10 +387,10 @@ function ChampionshipsRow({
                 href={`/teams/${abbreviation}?season=${s}`}
                 title={translate(locale, "team.champion_banner_title", { season: s })}
                 className={
-                  "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-xs transition-colors " +
+                  "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-xs transition-colors " +
                   (isActive
                     ? "border-amber-500 bg-amber-100 text-amber-900 dark:border-amber-400 dark:bg-amber-900/40 dark:text-amber-200"
-                    : "border-input bg-background hover:bg-accent")
+                    : "border-border bg-card hover:bg-accent")
                 }
               >
                 {s}

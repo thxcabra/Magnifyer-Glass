@@ -6,6 +6,7 @@ import { useLocale } from "@/components/locale-provider";
 import { TeamLogo } from "@/components/team-logo";
 import { BoxScoreTable } from "@/components/box-score-table";
 import { PlayByPlayFeed } from "@/components/play-by-play-feed";
+import { SectionCard } from "@/components/section-card";
 import type { BoxScore, PlayByPlay } from "@/lib/api";
 import { GAME_STATUS, formatClock, isOvertime } from "@/lib/live-format";
 
@@ -64,9 +65,9 @@ export function GameLiveView({
   const live = box.status === GAME_STATUS.LIVE;
 
   return (
-    <div>
+    <div className="space-y-5">
       {/* Header: away @ home with scores */}
-      <div className="flex items-center justify-center gap-6 rounded-xl border bg-card px-6 py-6">
+      <div className="bg-card flex items-center justify-center gap-6 rounded-3xl px-6 py-7 ring-1 ring-foreground/10">
         <TeamSide team={box.away} />
         <div className="text-center">
           {live && (
@@ -85,26 +86,28 @@ export function GameLiveView({
         <TeamSide team={box.home} />
       </div>
 
-      {/* Tabs */}
-      <div className="mt-6 flex gap-1 border-b">
-        <TabButton active={tab === "box"} onClick={() => setTab("box")}>
-          {t("live.box_score")}
-        </TabButton>
-        <TabButton active={tab === "pbp"} onClick={() => setTab("pbp")}>
-          {t("live.play_by_play")}
-        </TabButton>
-      </div>
+      <SectionCard>
+        {/* Tabs */}
+        <div className="flex gap-1 border-b border-border">
+          <TabButton active={tab === "box"} onClick={() => setTab("box")}>
+            {t("live.box_score")}
+          </TabButton>
+          <TabButton active={tab === "pbp"} onClick={() => setTab("pbp")}>
+            {t("live.play_by_play")}
+          </TabButton>
+        </div>
 
-      <div className="mt-4">
-        {tab === "box" ? (
-          <div className="grid gap-8 lg:grid-cols-2">
-            {box.away && <BoxScoreTable team={box.away} />}
-            {box.home && <BoxScoreTable team={box.home} />}
-          </div>
-        ) : (
-          <PlayByPlayFeed actions={pbp?.actions ?? []} />
-        )}
-      </div>
+        <div className="mt-5">
+          {tab === "box" ? (
+            <div className="grid gap-8 lg:grid-cols-2">
+              {box.away && <BoxScoreTable team={box.away} />}
+              {box.home && <BoxScoreTable team={box.home} />}
+            </div>
+          ) : (
+            <PlayByPlayFeed actions={pbp?.actions ?? []} />
+          )}
+        </div>
+      </SectionCard>
     </div>
   );
 }

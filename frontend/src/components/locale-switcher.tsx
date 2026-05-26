@@ -20,7 +20,7 @@ export function LocaleSwitcher() {
     <div
       role="group"
       aria-label="Language"
-      className="inline-flex items-center rounded-md border bg-card text-xs"
+      className="inline-flex items-center rounded-full border border-sidebar-border bg-card p-0.5 text-xs"
     >
       {LOCALES.map((l) => {
         const active = l === locale;
@@ -32,9 +32,9 @@ export function LocaleSwitcher() {
             aria-pressed={active}
             title={FULL_NAME[l]}
             className={
-              "rounded px-2 py-1 font-medium transition-colors " +
+              "rounded-full px-3 py-1 font-medium transition-colors " +
               (active
-                ? "bg-foreground text-background"
+                ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground")
             }
           >

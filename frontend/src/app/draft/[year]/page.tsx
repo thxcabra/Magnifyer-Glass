@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DraftClassGrid } from "@/components/draft-class-grid";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { api } from "@/lib/api";
 import { getServerT } from "@/lib/locale-server";
 
@@ -40,41 +41,38 @@ export default async function DraftYearPage({
   const { drafted, undrafted_count } = data;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">{t("common.draft")}</p>
-      <h1 className="mt-1 flex items-baseline gap-3 text-4xl font-semibold tracking-tight">
-        {/* "{year} NBA Draft" kept verbatim - the year is universal and "NBA Draft"
-            is the term Brazilian fans already use. */}
-        {year} NBA Draft
-        <span className="text-muted-foreground text-base font-normal">
-          {t("draft.picks_count", { n: drafted.length })}
-          {undrafted_count > 0 && ` · ${t("draft.undrafted_in_db", { n: undrafted_count })}`}
-        </span>
-      </h1>
-
-      <div className="mt-6 flex items-center gap-2">
+    <PageShell>
+      <PageHeader
+        kicker={t("common.draft")}
+        title={`${year} NBA Draft`}
+        subtitle={`${t("draft.picks_count", { n: drafted.length })}${
+          undrafted_count > 0 ? ` · ${t("draft.undrafted_in_db", { n: undrafted_count })}` : ""
+        }`}
+      >
         <Link
           href={`/draft/${yr - 1}`}
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           ← {yr - 1}
         </Link>
         <Link
           href="/drafts"
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           {t("draft.all_drafts")}
         </Link>
         <Link
           href={`/draft/${yr + 1}`}
-          className="text-muted-foreground hover:text-foreground rounded-md border px-3 py-1 text-sm transition-colors"
+          className="hover:bg-accent rounded-full border border-border px-3 py-1.5 text-sm transition-colors"
         >
           {yr + 1} →
         </Link>
-      </div>
+      </PageHeader>
 
-      <DraftClassGrid picks={drafted} />
-    </div>
+      <SectionCard>
+        <DraftClassGrid picks={drafted} />
+      </SectionCard>
+    </PageShell>
   );
 }
 

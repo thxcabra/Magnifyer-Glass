@@ -183,16 +183,16 @@ function ModeTabs({
   if (shown.length <= 1) return null;
 
   return (
-    <div className="inline-flex items-center gap-1 rounded-md border bg-card p-0.5 text-xs">
+    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card p-0.5 text-xs">
       {shown.map((t) => (
         <button
           key={t.value}
           type="button"
           onClick={() => setMode(t.value)}
           className={
-            "rounded px-2.5 py-1 font-medium transition-colors " +
+            "rounded-full px-3 py-1 font-medium transition-colors " +
             (mode === t.value
-              ? "bg-foreground text-background"
+              ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:text-foreground")
           }
         >

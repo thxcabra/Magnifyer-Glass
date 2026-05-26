@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { api, type PlayoffsResponse } from "@/lib/api";
 import { PlayoffsBracket } from "@/components/playoffs-bracket";
+import { PageShell, PageHeader, SectionCard } from "@/components/section-card";
 import { getServerT } from "@/lib/locale-server";
 
 export const revalidate = 300;
@@ -27,16 +28,9 @@ export default async function PlayoffsPage() {
   const series = data?.series ?? [];
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">
-        {t("playoffs.title")}
-      </p>
-      <h1 className="mt-1 text-4xl font-bold tracking-tight">
-        {t("playoffs.title")}
-      </h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("playoffs.sub")}</p>
-
-      <div className="mt-8">
+    <PageShell>
+      <PageHeader title={t("playoffs.title")} subtitle={t("playoffs.sub")} />
+      <SectionCard>
         {series.length === 0 ? (
           <p className="text-muted-foreground text-sm">{t("playoffs.empty")}</p>
         ) : (
@@ -50,7 +44,7 @@ export default async function PlayoffsPage() {
             }}
           />
         )}
-      </div>
-    </div>
+      </SectionCard>
+    </PageShell>
   );
 }

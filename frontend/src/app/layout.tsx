@@ -1,19 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Rubik, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Nav } from "@/components/nav";
-import { LiveTicker } from "@/components/live-ticker";
+import { Sidebar } from "@/components/sidebar";
+import { NewsBar } from "@/components/news-bar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LocaleProvider } from "@/components/locale-provider";
 import { getServerLocale, getServerTheme } from "@/lib/locale-server";
 import { translate } from "@/lib/i18n";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Rubik is the brand typeface — variable font, so we get the full weight range
+// (normal body, bold headings) from a single load.
+const rubik = Rubik({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
+// Kept for tabular numerals (scores, tricodes, stat tables) via `font-mono`.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -69,7 +72,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#e36c04",
   width: "device-width",
   initialScale: 1,
 };
@@ -84,22 +87,26 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased${theme === "dark" ? " dark" : ""}`}
+      className={`${rubik.variable} ${geistMono.variable} h-full antialiased${theme === "dark" ? " dark" : ""}`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="bg-background text-foreground min-h-full">
         <a
           href="#main"
-          className="bg-primary text-primary-foreground sr-only z-50 rounded px-3 py-2 text-sm font-medium focus:not-sr-only focus:absolute focus:left-4 focus:top-3"
+          className="bg-primary text-primary-foreground sr-only z-50 rounded-full px-4 py-2 text-sm font-medium focus:not-sr-only focus:absolute focus:left-4 focus:top-3"
         >
           {translate(locale, "common.skip_to_content")}
         </a>
         <LocaleProvider initialLocale={locale}>
           <TooltipProvider delayDuration={200}>
-            <Nav theme={theme} />
-            <LiveTicker />
-            <main id="main" className="flex-1">
-              {children}
-            </main>
+            {/* 3-column shell: left rail · scrolling content · orange news rail.
+                Stacks to a single column with a top bar below the lg breakpoint. */}
+            <div className="min-h-screen lg:flex">
+              <Sidebar theme={theme} />
+              <main id="main" className="min-w-0 flex-1">
+                {children}
+              </main>
+              <NewsBar theme={theme} />
+            </div>
           </TooltipProvider>
         </LocaleProvider>
       </body>

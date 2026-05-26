@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TeamLogo } from "@/components/team-logo";
+import { SectionCard } from "@/components/section-card";
 import type { StandingRow } from "@/lib/api";
 
 export function StandingsTable({
@@ -10,11 +11,8 @@ export function StandingsTable({
   rows: StandingRow[];
 }) {
   return (
-    <div>
-      <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
-        {title}
-      </h2>
-      <div className="overflow-hidden rounded-lg border bg-card">
+    <SectionCard title={title}>
+      <div className="overflow-hidden rounded-2xl bg-muted">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-muted-foreground border-b text-left text-[10px] tracking-wide uppercase">
@@ -57,6 +55,6 @@ export function StandingsTable({
           </tbody>
         </table>
       </div>
-    </div>
+    </SectionCard>
   );
 }

@@ -15,6 +15,7 @@ import { PlayerStatsBlock } from "@/components/player-stats-block";
 import { CareerSnapshot } from "@/components/career-snapshot";
 import { NewsList } from "@/components/news-list";
 import { GameLogTable } from "@/components/game-log-table";
+import { PageShell, SectionCard } from "@/components/section-card";
 import type { Archetype } from "@/lib/api";
 import { api, type SeasonStats } from "@/lib/api";
 import { getServerT } from "@/lib/locale-server";
@@ -157,9 +158,9 @@ export default async function PlayerPage({
     : player.archetype_confidence ?? null;
 
   return (
-    <div>
-      {/* Immersive team-tinted header banner */}
-      <section className="relative isolate flex min-h-[300px] flex-col justify-end overflow-hidden border-b">
+    <PageShell>
+      {/* Immersive team-tinted header card */}
+      <section className="bg-card relative isolate flex min-h-[300px] flex-col justify-end overflow-hidden rounded-3xl ring-1 ring-foreground/10">
         {heroPhoto && (
           <Image
             src={heroPhoto}
@@ -182,13 +183,13 @@ export default async function PlayerPage({
             text theme-colored and readable in both light and dark. */}
         <div
           aria-hidden
-          className="from-background via-background/70 to-background/20 absolute inset-0 bg-gradient-to-r"
+          className="from-card via-card/70 to-card/20 absolute inset-0 bg-gradient-to-r"
         />
         <div
           aria-hidden
-          className="to-background absolute inset-0 bg-gradient-to-t from-transparent via-transparent"
+          className="to-card absolute inset-0 bg-gradient-to-t from-transparent via-transparent"
         />
-        <div className="relative mx-auto flex max-w-6xl flex-wrap items-start gap-6 px-6 pt-10 pb-8">
+        <div className="relative flex flex-wrap items-start gap-6 px-6 pt-10 pb-8">
           <PlayerHeadshot
             externalId={player.external_id}
             url={player.headshot_url}
@@ -297,22 +298,22 @@ export default async function PlayerPage({
         )}
       </section>
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="mt-6 space-y-6">
       <PlayerStatsBlock player={player} stats={stats} isActive={isActive} />
 
       {/* `items-start` stops the columns from stretching to match the tallest
           card; each card is now sized by its content, and the side-by-side
           layout flows naturally without forcing empty space below the
           shorter side. */}
-      <div className="mt-10 grid items-start gap-6 lg:grid-cols-3">
+      <div className="grid items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <CareerSnapshot stats={stats} />
         </div>
 
         <div className="space-y-6">
-          <Card>
+          <Card className="rounded-3xl">
             <CardHeader>
-              <CardTitle className="text-base font-medium">{t("player.body_composition")}</CardTitle>
+              <CardTitle className="font-heading text-lg font-bold">{t("player.body_composition")}</CardTitle>
             </CardHeader>
             <CardContent>
               {/* Render BodyComp whenever we have ANY measurement (Combine wingspan
@@ -343,30 +344,20 @@ export default async function PlayerPage({
         </div>
       </div>
 
-      <div className="mt-6">
-        <SeasonLog stats={stats} />
-      </div>
+      <SeasonLog stats={stats} />
 
       {player.external_id && displayTeam && (
-        <div className="mt-10">
-          <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
-            {t("player.recent_games")}
-          </h2>
+        <SectionCard title={t("player.recent_games")}>
           <GameLogTable externalId={player.external_id} team={displayTeam} />
-        </div>
+        </SectionCard>
       )}
 
       {news.length > 0 && (
-        <div className="mt-10">
-          <h2 className="border-primary mb-3 border-l-4 pl-3 text-lg font-bold tracking-tight">
-            {t("news.title")}
-          </h2>
-          <div className="rounded-lg border bg-card p-4">
-            <NewsList items={news} locale={locale} />
-          </div>
-        </div>
+        <SectionCard title={t("news.title")}>
+          <NewsList items={news} locale={locale} />
+        </SectionCard>
       )}
       </div>
-    </div>
+    </PageShell>
   );
 }

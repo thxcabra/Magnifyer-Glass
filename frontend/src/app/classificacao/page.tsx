@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { api, type StandingsResponse } from "@/lib/api";
 import { StandingsTable } from "@/components/standings-table";
+import { PageShell, PageHeader } from "@/components/section-card";
 import { getServerT } from "@/lib/locale-server";
 
 export const revalidate = 300;
@@ -25,19 +26,16 @@ export default async function StandingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <p className="text-muted-foreground text-xs tracking-wide uppercase">
-        {t("nav.standings")}
-      </p>
-      <h1 className="mt-1 text-4xl font-bold tracking-tight">
-        {t("standings.title")}
-      </h1>
-      <p className="text-muted-foreground mt-2 text-sm">{t("standings.sub")}</p>
-
-      <div className="mt-8 grid gap-8 lg:grid-cols-2">
+    <PageShell>
+      <PageHeader
+        kicker={t("nav.standings")}
+        title={t("standings.title")}
+        subtitle={t("standings.sub")}
+      />
+      <div className="grid gap-5 lg:grid-cols-2">
         <StandingsTable title={t("standings.west")} rows={data?.west ?? []} />
         <StandingsTable title={t("standings.east")} rows={data?.east ?? []} />
       </div>
-    </div>
+    </PageShell>
   );
 }

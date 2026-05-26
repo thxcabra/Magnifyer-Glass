@@ -37,7 +37,7 @@ export function GameLogTable({
 
   if (isLoading) {
     return (
-      <div className="text-muted-foreground rounded-lg border bg-card p-6 text-center text-sm">
+      <div className="text-muted-foreground rounded-2xl bg-muted p-6 text-center text-sm">
         {t("common.loading")}
       </div>
     );
@@ -45,7 +45,7 @@ export function GameLogTable({
   if (games.length === 0) return null;
 
   return (
-    <div className="overflow-x-auto rounded-lg border bg-card">
+    <div className="overflow-x-auto rounded-2xl bg-muted">
       <table className="w-full text-sm">
         <thead>
           <tr className="text-muted-foreground border-b text-left text-[10px] tracking-wide uppercase">

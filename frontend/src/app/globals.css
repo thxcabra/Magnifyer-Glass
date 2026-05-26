@@ -40,88 +40,88 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-md: calc(var(--radius) * 0.85);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 2.6);
+  --radius-4xl: calc(var(--radius) * 3.2);
 }
 
-/* Magnifyer Glass - basketball-orange accent on either skin.
- * :root is the LIGHT theme (white surfaces, warm orange); `.dark` below is the
- * dark skin. The active theme is set by a cookie-driven class on <html>. */
+/* Magnifyer Glass brand kit — exact palette from the Brand Guide.
+ * Orange (#E36C04) is reserved for interactive elements and the News rail.
+ * :root is the LIGHT skin; `.dark` is the dark skin. The active theme is set by
+ * a cookie-driven class on <html>. Warm, light, generously rounded. */
 :root {
   color-scheme: light;
-  --background: oklch(0.985 0.004 250);          /* near-white, faint cool */
-  --foreground: oklch(0.22 0.02 260);            /* dark slate ink */
-  --card: oklch(1 0 0);                          /* pure white */
-  --card-foreground: oklch(0.22 0.02 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 260);
-  --primary: oklch(0.66 0.20 45);                /* basketball orange (deeper for white bg) */
-  --primary-foreground: oklch(0.99 0.01 80);
-  --secondary: oklch(0.965 0.006 250);
-  --secondary-foreground: oklch(0.26 0.02 260);
-  --muted: oklch(0.965 0.006 250);
-  --muted-foreground: oklch(0.50 0.02 260);
-  --accent: oklch(0.95 0.04 60);                 /* light warm-orange tint */
-  --accent-foreground: oklch(0.34 0.08 50);
-  --destructive: oklch(0.58 0.22 25);
-  --border: oklch(0.90 0.008 260);
-  --input: oklch(0.92 0.008 260);
-  --ring: oklch(0.66 0.20 45 / 50%);
-  --chart-1: oklch(0.66 0.20 45);                /* orange */
-  --chart-2: oklch(0.62 0.14 200);               /* teal */
-  --chart-3: oklch(0.56 0.18 295);               /* violet */
-  --chart-4: oklch(0.62 0.16 145);               /* green */
-  --chart-5: oklch(0.60 0.20 350);               /* magenta */
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.004 250);
-  --sidebar-foreground: oklch(0.22 0.02 260);
-  --sidebar-primary: oklch(0.66 0.20 45);
-  --sidebar-primary-foreground: oklch(0.99 0.01 80);
-  --sidebar-accent: oklch(0.95 0.04 60);
-  --sidebar-accent-foreground: oklch(0.34 0.08 50);
-  --sidebar-border: oklch(0.90 0.008 260);
-  --sidebar-ring: oklch(0.66 0.20 45 / 50%);
+  --background: #fafafa;          /* center column — very light gray */
+  --foreground: #262422;          /* structural near-black ink */
+  --card: #ffffff;                /* section/surface cards pop on the bg */
+  --card-foreground: #262422;
+  --popover: #ffffff;
+  --popover-foreground: #262422;
+  --primary: #e36c04;             /* vibrant action orange */
+  --primary-foreground: #fff4ea;  /* warm off-white on orange */
+  --secondary: #fff4ea;           /* warm off-white surface */
+  --secondary-foreground: #2b241e;
+  --muted: #f1ede7;               /* warm light gray */
+  --muted-foreground: #89827c;    /* neutral gray text */
+  --accent: #fbe6d2;              /* faint orange tint — hover/selection */
+  --accent-foreground: #b5560a;   /* deep orange ink */
+  --destructive: #d23a2e;
+  --border: #d9d9d9;              /* structural gray hairline */
+  --input: #e3dfd8;
+  --ring: #e36c04;
+  --chart-1: #e36c04;             /* orange */
+  --chart-2: #0e8a8f;             /* teal */
+  --chart-3: #6d4a96;             /* violet */
+  --chart-4: #3e9e5b;             /* green */
+  --chart-5: #c2477f;             /* magenta */
+  --radius: 1rem;
+  --sidebar: #d9d9d9;             /* constant structural rail */
+  --sidebar-foreground: #2b241e;
+  --sidebar-primary: #e36c04;
+  --sidebar-primary-foreground: #fff4ea;
+  --sidebar-accent: #cdc9c2;      /* hover, slightly darker than rail */
+  --sidebar-accent-foreground: #262422;
+  --sidebar-border: #c4c0ba;
+  --sidebar-ring: #e36c04;
 }
 
-/* `.dark` mirrors :root - both keep the orange-accent dark identity.
- * We leave the selector around for components that target `dark:` directly. */
+/* `.dark` — warm near-black surfaces, same orange action color. */
 .dark {
   color-scheme: dark;
-  --background: oklch(0.16 0.012 250);
-  --foreground: oklch(0.96 0.005 250);
-  --card: oklch(0.20 0.012 250);
-  --card-foreground: oklch(0.96 0.005 250);
-  --popover: oklch(0.20 0.012 250);
-  --popover-foreground: oklch(0.96 0.005 250);
-  --primary: oklch(0.74 0.18 47);
-  --primary-foreground: oklch(0.16 0.012 250);
-  --secondary: oklch(0.26 0.012 250);
-  --secondary-foreground: oklch(0.96 0.005 250);
-  --muted: oklch(0.24 0.010 250);
-  --muted-foreground: oklch(0.68 0.012 250);
-  --accent: oklch(0.27 0.012 250);
-  --accent-foreground: oklch(0.96 0.005 250);
-  --destructive: oklch(0.66 0.22 25);
-  --border: oklch(1 0 0 / 11%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.74 0.18 47 / 60%);
-  --chart-1: oklch(0.74 0.18 47);
-  --chart-2: oklch(0.72 0.14 200);
-  --chart-3: oklch(0.66 0.18 295);
-  --chart-4: oklch(0.78 0.16 145);
-  --chart-5: oklch(0.70 0.18 350);
-  --sidebar: oklch(0.18 0.012 250);
-  --sidebar-foreground: oklch(0.96 0.005 250);
-  --sidebar-primary: oklch(0.74 0.18 47);
-  --sidebar-primary-foreground: oklch(0.16 0.012 250);
-  --sidebar-accent: oklch(0.27 0.012 250);
-  --sidebar-accent-foreground: oklch(0.96 0.005 250);
-  --sidebar-border: oklch(1 0 0 / 11%);
-  --sidebar-ring: oklch(0.74 0.18 47 / 60%);
+  --background: #262422;          /* center column — structural near-black */
+  --foreground: #fff4ea;          /* warm off-white ink */
+  --card: #2b241e;                /* card bg per brand kit */
+  --card-foreground: #fff4ea;
+  --popover: #2b241e;
+  --popover-foreground: #fff4ea;
+  --primary: #e36c04;
+  --primary-foreground: #fff4ea;
+  --secondary: #353029;           /* structural warm dark surface */
+  --secondary-foreground: #fff4ea;
+  --muted: #322c26;
+  --muted-foreground: #acacac;    /* medium gray text */
+  --accent: #45382c;              /* warm hover/selection tint */
+  --accent-foreground: #fdd8b5;
+  --destructive: #f26d6d;
+  --border: #3c352e;              /* subtle hairline on dark surfaces */
+  --input: #423b33;
+  --ring: #e36c04;
+  --chart-1: #f07a1f;
+  --chart-2: #2bb6bb;
+  --chart-3: #9b7ad0;
+  --chart-4: #5cc47a;
+  --chart-5: #e06aa0;
+  --sidebar: #535353;             /* constant rail per brand kit */
+  --sidebar-foreground: #fff4ea;
+  --sidebar-primary: #e36c04;
+  --sidebar-primary-foreground: #fff4ea;
+  --sidebar-accent: #635f5a;      /* hover, lighter than rail */
+  --sidebar-accent-foreground: #fff4ea;
+  --sidebar-border: #6a6660;
+  --sidebar-ring: #e36c04;
 }
 
 @layer base {
