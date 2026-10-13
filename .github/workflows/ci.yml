@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   frontend:
-    name: Frontend (typecheck · lint · build)
+    name: Frontend (typecheck · lint · test · build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,6 +32,9 @@ jobs:
 
       - name: Lint
         run: npx eslint
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npx next build
