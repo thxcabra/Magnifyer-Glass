@@ -19,7 +19,10 @@ Production **and** Preview:
 | `NEXT_PUBLIC_API_BASE` | deployed backend URL, e.g. `https://magnifyer-api.onrender.com` |
 | `NEXT_PUBLIC_SITE_URL` | the public site URL, e.g. `https://magnifyerglass.com` |
 
-Both are required — `lib/api.ts` and `lib/site.ts` have no production fallback.
+Set both in production: `lib/api.ts` / `lib/swr.ts` fall back to
+`http://localhost:8000` and `lib/site.ts` falls back to `http://localhost:3000`,
+which only make sense in local development. See
+[frontend/.env.example](frontend/.env.example).
 Build command `npm run build` (auto-detected). `next.config.ts` already
 allowlists the image hosts (`cdn.nba.com`, `images.unsplash.com`,
 `upload.wikimedia.org`).
