@@ -10,6 +10,13 @@ full schedule, teams, players, drafts, awards, news and player photos. Built
 **Portuguese-first** (auto-detected from the browser, English available) with a
 light/dark theme.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/home.png" alt="Home: hero, today's games and the live news column" width="49%" />
+  <img src="docs/screenshots/drafts.png" alt="Drafts: every NBA draft class since 1985" width="49%" />
+</p>
+
 ## Features
 
 - **Jogos / Games** — today's scoreboard (live, auto-refreshing) + per-game box
@@ -179,4 +186,4 @@ IP. Live features run fine on any cloud host.
 
 ## Author
 
-**João Cabral** — [GitHub](https://github.com/thxcabra) · [LinkedIn](https://www.linkedin.com/in/joao-cabral-machado/)
+**João Cabral** — [GitHub](https://github.com/thxcabra) · [LinkedIn](https://www.linkedin.com/in/joao-cabral-machado/) · [Portfolio](https://thxcabra.github.io/portfolio/#/projetos/1)
