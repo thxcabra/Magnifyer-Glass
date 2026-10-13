@@ -1,5 +1,5 @@
 # Slim dependency set for the always-on WEB API only.
-# The API routes never import pandas/scikit-learn/playwright/nba_api — those are
+# The API routes never import pandas/playwright/nba_api — those are
 # only used by the offline scrapers/jobs (run locally / on a self-hosted
 # runner). Keeping the web image lean means a small, cheap, fast-booting
 # container that fits comfortably in a free tier.

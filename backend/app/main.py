@@ -25,7 +25,10 @@ settings = get_settings()
 
 app = FastAPI(
     title="Magnifyer Glass API",
-    description="NBA scouting engine — prospect similarity, archetypes, and discovery.",
+    description=(
+        "NBA data API — live scores, box scores, play-by-play, standings, playoffs, "
+        "schedule, teams, players, drafts, awards, news, player photos and archetypes."
+    ),
     version="0.1.0",
 )
 

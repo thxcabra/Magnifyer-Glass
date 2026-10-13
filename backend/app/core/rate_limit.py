@@ -9,7 +9,7 @@ fetches reach this API from a *single* IP (the Next.js server), not the end
 user. A global `default_limits` would therefore throttle the whole site's
 SSR traffic collectively. We deliberately leave the global limit off and
 apply per-route limits only on the heaviest / most abuse-prone public
-endpoints (`/compare`, `/discovery`). If you deploy behind a proxy and want
+endpoints (`/discovery`). If you deploy behind a proxy and want
 true per-user limits, forward the real client IP via `X-Forwarded-For` and
 swap `get_remote_address` for a header-aware key function, or whitelist the
 SSR server's IP.

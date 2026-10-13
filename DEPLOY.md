@@ -1,7 +1,7 @@
 # Deployment
 
 Three pieces, deployed independently. The web API is intentionally lightweight
-(no Chromium / pandas / scikit-learn — those only run in the offline jobs), so
+(no Chromium / pandas — those only run in the offline jobs), so
 it ships as a small, cheap, fast-booting container.
 
 ## Frontend → Vercel
@@ -73,7 +73,7 @@ these must run from a **residential IP**:
   [.github/workflows/cron-daily.yml](.github/workflows/cron-daily.yml).
 - or **Windows Task Scheduler** running `python -m app.jobs.daily_refresh`.
 - [.github/workflows/cron-weekly.yml](.github/workflows/cron-weekly.yml)
-  (Supabase-only: `precompute_similarity`, `compute_stat_titles`) runs fine on
+  (Supabase-only: `compute_stat_titles`) runs fine on
   hosted runners.
 
 ## Monitoring

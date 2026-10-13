@@ -1,7 +1,7 @@
 """Build a single feature row per player from the normalized tables.
 
-Used by every offline job that needs a "player vs player" view:
-the similarity engine, the archetype classifier, and any future analytics.
+Used by the offline jobs that need a "player vs player" view, such as the
+archetype classifier.
 
 Representative-season logic: a player's feature row uses the season in
 which they played the most minutes — a simple proxy for "career peak"

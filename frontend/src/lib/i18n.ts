@@ -102,8 +102,6 @@ const EN: Dict = {
   "notfound.draft_description": "No draft class on file for that year. Try browsing all drafts.",
   "notfound.year_title": "Season not found",
   "notfound.year_description": "No data on file for that season. Try browsing all seasons.",
-  "notfound.compare_title": "Comparison unavailable",
-  "notfound.compare_description": "We don't have similarity matches for this player yet. The cache may not be populated.",
   "notfound.browse_players": "Browse all players",
   "notfound.browse_teams": "Browse all teams",
   "notfound.browse_drafts": "Browse all drafts",
@@ -300,9 +298,6 @@ const EN: Dict = {
   "home.how_arch_kicker": "02 · Archetypes",
   "home.how_arch_title": "16 tactical roles",
   "home.how_arch_body": "Calibrated against Cleaning the Glass, BBall-Index, and public analyst convention. Strict position gates keep Shaq out of the guard buckets.",
-  "home.how_sim_kicker": "03 · Similarity",
-  "home.how_sim_title": "Cosine matching",
-  "home.how_sim_body": "Weighted cosine similarity over MinMax-scaled stat + physical vectors. Prospect → top-N NBA comps, ranked.",
 
   // Drafts
   "drafts.title": "NBA Drafts",
@@ -486,8 +481,6 @@ const PT_BR: Dict = {
   "notfound.draft_description": "Não temos dados do Draft para este ano. Veja todas as classes disponíveis.",
   "notfound.year_title": "Temporada não encontrada",
   "notfound.year_description": "Não temos dados para esta temporada. Veja todas as temporadas disponíveis.",
-  "notfound.compare_title": "Comparação indisponível",
-  "notfound.compare_description": "Ainda não temos comparações de similaridade para este jogador. O cache pode não ter sido preenchido.",
   "notfound.browse_players": "Ver todos os jogadores",
   "notfound.browse_teams": "Ver todos os times",
   "notfound.browse_drafts": "Ver todos os Drafts",
@@ -684,9 +677,6 @@ const PT_BR: Dict = {
   "home.how_arch_kicker": "02 · Arquétipos",
   "home.how_arch_title": "16 papéis táticos",
   "home.how_arch_body": "Calibrados com Cleaning the Glass, BBall-Index e convenção pública dos analistas. Travas rígidas de posição impedem que Shaq caia nos buckets de armadores.",
-  "home.how_sim_kicker": "03 · Similaridade",
-  "home.how_sim_title": "Pareamento por cosseno",
-  "home.how_sim_body": "Similaridade por cosseno ponderada sobre vetores estatístico + físico (escala MinMax). Prospecto → top-N comparações na NBA, ranqueadas.",
 
   // Drafts
   "drafts.title": "Drafts da NBA",

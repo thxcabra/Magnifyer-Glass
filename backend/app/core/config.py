@@ -15,10 +15,6 @@ class Settings(BaseSettings):
     api_port: int = Field(default=8000, alias="API_PORT")
     api_cors_origins: str = Field(default="http://localhost:3000", alias="API_CORS_ORIGINS")
 
-    similarity_weight_stats: float = Field(default=0.70, alias="SIMILARITY_WEIGHT_STATS")
-    similarity_weight_phys: float = Field(default=0.30, alias="SIMILARITY_WEIGHT_PHYS")
-    similarity_top_n: int = Field(default=10, alias="SIMILARITY_TOP_N")
-
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.api_cors_origins.split(",") if o.strip()]

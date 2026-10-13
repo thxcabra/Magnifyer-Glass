@@ -1,8 +1,7 @@
 name: Weekly recompute
 
-# Rebuilds the similarity_cache (powers /compare) and recomputes per-season
-# statistical-title leaders. Both jobs read from Supabase only — no external
-# NBA calls — so they run reliably on hosted runners.
+# Recomputes per-season statistical-title leaders. The job reads from Supabase
+# only — no external NBA calls — so it runs reliably on hosted runners.
 #
 # Requires repo secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY.
 
@@ -36,9 +35,6 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-      - name: Recompute similarity cache
-        run: python -m app.jobs.precompute_similarity
 
       - name: Recompute statistical-title leaders
         run: python -m app.jobs.compute_stat_titles --upsert

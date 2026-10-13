@@ -4,7 +4,7 @@ from datetime import date, datetime
 from enum import Enum
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class PlayerSource(str, Enum):
@@ -113,21 +113,3 @@ class StatsNormalized(BaseModel):
     dbpm: float | None = None
     per: float | None = None
     ws_per_48: float | None = None
-
-
-class SimilarityWeights(BaseModel):
-    stats: float = Field(default=0.7, ge=0, le=1)
-    phys: float = Field(default=0.3, ge=0, le=1)
-
-
-class SimilarityMatch(BaseModel):
-    player: Player
-    similarity: float
-    stats_component: float | None = None
-    phys_component: float | None = None
-
-
-class ComparisonResponse(BaseModel):
-    prospect: Player
-    matches: list[SimilarityMatch]
-    weights: SimilarityWeights

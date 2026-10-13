@@ -1,4 +1,4 @@
-# Slim web image — no Chromium/pandas/sklearn (those live in the jobs, which
+# Slim web image — no Chromium/pandas (those live in the jobs, which
 # run off-platform). Small + fast cold starts, friendly to free tiers.
 FROM python:3.12-slim
 
